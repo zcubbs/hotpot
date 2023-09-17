@@ -45,7 +45,7 @@ func Install(values Values, kubeconfig string, debug bool) error {
 	}
 
 	// write tmp manifest
-	err = os.WriteFile(valuesPath, configFileContent, 0644)
+	err = os.WriteFile(valuesPath, configFileContent, 0600)
 	if err != nil {
 		return fmt.Errorf("failed to write traefik values.yaml \n %w", err)
 	}

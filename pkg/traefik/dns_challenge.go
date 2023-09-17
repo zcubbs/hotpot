@@ -11,6 +11,7 @@ import (
 
 type DnsProvider string
 
+/* #nosec */
 const traefikProviderCredentialsSecretName = "traefik-dns-provider-credentials"
 
 const (
@@ -20,12 +21,14 @@ const (
 )
 
 const (
-	ovhEndpointEnvKey    = "OVH_ENDPOINT"
-	ovhAppKeyEnvKey      = "OVH_APPLICATION_KEY"
+	ovhEndpointEnvKey = "OVH_ENDPOINT"
+	ovhAppKeyEnvKey   = "OVH_APPLICATION_KEY"
+	/* #nosec */
 	ovhAppSecretEnvKey   = "OVH_APPLICATION_SECRET"
 	ovhConsumerKeyEnvKey = "OVH_CONSUMER_KEY"
 
 	//azureClientIDEnvKey     = "AZURE_CLIENT_ID"
+	///* #nosec */
 	//azureClientSecretEnvKey = "AZURE_CLIENT_SECRET"
 )
 

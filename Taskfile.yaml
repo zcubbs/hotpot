@@ -1,0 +1,23 @@
+version: '3'
+
+vars:
+  GOOS: "{{OS}}"
+
+tasks:
+
+  test:
+    cmds:
+      - go test ./...
+
+  build:linux:
+    cmds:
+      - go env -w GOOS=linux GOARCH=amd64
+      - go build -o bin/zrun main.go
+
+  lint:
+    cmds:
+      - golangci-lint run ./... -v --timeout 5m
+
+  scan:
+    cmds:
+      - gosec -conf .gosec.config.json "./..."

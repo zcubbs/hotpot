@@ -1,0 +1,63 @@
+name: Release
+
+# This ensures that the release is only created after the Docker Build Pipeline
+# has successfully completed.
+on:
+  workflow_dispatch:
+    inputs:
+      semver:
+        type: string
+        description: 'Semver (eg: v1.2.3)'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+
+  release:
+    runs-on: ubuntu-latest
+
+    if : github.event.inputs.semver != '' && startsWith(github.event.inputs.semver, 'v') && github.triggering_actor == 'zcubbs'
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3.5.3
+
+      - name: Set up Go
+        uses: actions/setup-go@v4.1.0
+        with:
+          go-version: '1.21'
+
+      - name: List files
+        run: tree -Cfi
+      - name: Write new go.mod into logs
+        run: cat go.mod
+      - name: Write new go.sum into logs
+        run: cat go.sum
+
+      - name: Create tag
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config --global user.name '${{ github.triggering_actor }}'
+          git config --global user.email "${{ github.triggering_actor}}@users.noreply.github.com"
+
+          git add .
+          git commit --allow-empty -m 'bump ${{ inputs.semver }}'
+          git tag ${{ inputs.semver }}
+          git push origin ${{ inputs.semver }}
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: ${{ inputs.semver }}
+          tag_name: ${{ inputs.semver }}
+
+      - uses: goreleaser/goreleaser-action@v4
+        with:
+          distribution: goreleaser
+          version: latest
+          args: release -f .goreleaser.yaml --clean --verbose
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
