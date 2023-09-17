@@ -22,12 +22,12 @@ tasks:
     cmds:
       - gosec -conf .gosec.config.json "./..."
 
-  install:golangci-lint:
+  tools:install:golangci-lint:
     desc: Install golangci-lint
     cmds:
       - go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 
-  install:gosec:
+  tools:install:gosec:
     desc: Install gosec
     cmds:
       - go install github.com/securego/gosec/v2/cmd/gosec@latest
