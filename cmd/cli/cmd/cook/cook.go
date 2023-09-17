@@ -1,8 +1,11 @@
 package cook
 
 import (
-	"fmt"
 	"github.com/spf13/cobra"
+	"github.com/zcubbs/hotpot/pkg/recipe"
+	"github.com/zcubbs/x/must"
+	"github.com/zcubbs/x/progress"
+	"github.com/zcubbs/x/style"
 )
 
 var (
@@ -15,20 +18,19 @@ var Cmd = &cobra.Command{
 	Short: "cook commands",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		err := cook()
-		if err != nil {
-			fmt.Println(err)
-		}
+		style.PrintColoredHeader("Cooking the cluster")
+		must.Succeed(progress.RunTask(cook(), true))
 	},
 }
 
-func cook() error {
-
-	return nil
+func cook() func() error {
+	return func() error {
+		return recipe.Cook(configPath)
+	}
 }
 
 func init() {
-	Cmd.Flags().StringVarP(&configPath, "config", "c", "", "yaml config file path (default is ./config.yaml)")
+	Cmd.Flags().StringVarP(&configPath, "config", "c", "./recipe.yaml", "yaml config file path (default is ./recipe.yaml)")
 
 	_ = Cmd.MarkFlagRequired("config")
 }
