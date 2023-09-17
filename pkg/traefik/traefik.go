@@ -1,8 +1,10 @@
 package traefik
 
 import (
+	"context"
 	"fmt"
 	"github.com/zcubbs/x/helm"
+	"github.com/zcubbs/x/kubernetes"
 	"github.com/zcubbs/x/templates"
 	"os"
 	"time"
@@ -61,7 +63,28 @@ func Install(values Values, kubeconfig string, debug bool) error {
 		return err
 	}
 
+	// wait for traefik deployment to be ready
+	ctxWithTimeout, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
+	defer cancel()
+	err = kubernetes.IsDeploymentReady(
+		ctxWithTimeout,
+		kubeconfig,
+		traefikNamespace,
+		[]string{"traefik"},
+		debug,
+	)
+	if err != nil {
+		return fmt.Errorf("failed to wait for traefik deployment to be ready \n %w", err)
+	}
+
 	return nil
+}
+
+func Uninstall(kubeconfig string, debug bool) error {
+	return helm.Uninstall(helm.Chart{
+		Name:      traefikChartName,
+		Namespace: traefikNamespace,
+	}, kubeconfig, debug)
 }
 
 func getTmpValuesFilePath() string {
