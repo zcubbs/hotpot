@@ -12,7 +12,7 @@ tasks:
   build:linux:
     cmds:
       - go env -w GOOS=linux GOARCH=amd64
-      - go build -o bin/zrun main.go
+      - go build -o bin/hotpot main.go
 
   lint:
     cmds:
