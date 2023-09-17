@@ -2,6 +2,15 @@
 
 `HotPot` is your go-to CLI utility that marries the simplicity of cooking with the robustness of Kubernetes deployments. Drawing inspiration from crafting and culinary arts, HotPot serves up k3s clusters based on your specific recipe (configuration). 
 
+---
+<p align="center">
+</p>
+<p align="center">
+  <img width="650" src="docs/assets/splash.png">
+</p>
+
+---
+
 ## Features
 
 - [x] Create a k3s cluster with yaml configuration
