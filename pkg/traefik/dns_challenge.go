@@ -28,7 +28,7 @@ const (
 	ovhConsumerKeyEnvKey = "OVH_CONSUMER_KEY"
 
 	azureClientIDEnvKey = "AZURE_CLIENT_ID"
-	///* #nosec */
+	/* #nosec */
 	azureClientSecretEnvKey = "AZURE_CLIENT_SECRET"
 	azureResourceGroupKey   = "AZURE_RESOURCE_GROUP"
 	azureSubscriptionIDKey  = "AZURE_SUBSCRIPTION_ID"
