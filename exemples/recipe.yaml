@@ -9,6 +9,13 @@ ingredients:
     minCpuCores: 4
     checkUrls:
       - https://github.com
+    telnet:
+      - ip: 127.0.0.1
+        port: 80
+    ssh:
+      - ip: 127.0.0.1
+        port: 22
+
 
   certManager:
     enabled: false

@@ -14,7 +14,18 @@ type step struct {
 	c bool                // condition
 }
 
-func checkPrerequisites(_ *Recipe) error {
+func checkPrerequisites(r *Recipe) error {
+	fmt.Printf("🍳 Checking prerequisites... \n")
+	// check if os is linux
+	// check if arch is amd64
+	// check if distro is in list of supported distros/versions (cat /etc/os-release)
+	// check if ram is enough
+	// check if cpu is enough
+	// check if disk is enough, check all disks
+	// check if telnet ok for list of ip:port (telnet <ip>:<port>)
+	// check if curl ok for list of url (curl <url>)
+	// check if ssh ok for list of ip (ssh <ip>)
+
 	return nil
 }
 
