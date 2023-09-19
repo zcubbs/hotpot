@@ -1,27 +1,48 @@
 package recipe
 
 import (
-	"gopkg.in/yaml.v2"
-	"os"
+	"encoding/json"
+	"fmt"
+	"github.com/spf13/viper"
+	"path/filepath"
 )
 
 func Load(path string) (*Recipe, error) {
-	var config *Recipe
-	// Read the file
-	data, err := os.ReadFile(path)
+	var recipe Recipe
+
+	initViperPresets(path)
+
+	err := viper.ReadInConfig()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("unable to load recipe file path=%s err=%s", path, err)
 	}
 
-	// Unmarshal the YAML data into the provided interface
-	err = yaml.Unmarshal(data, config)
+	err = viper.Unmarshal(&recipe)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("could not decode recipe into struct err=%s", err)
 	}
+	return &recipe, nil
+}
 
-	return config, nil
+func initViperPresets(path string) {
+	dir := filepath.Dir(path)
+	file := filepath.Base(path)
+	viper.AddConfigPath(dir)
+	viper.SetConfigName(file)
+	viper.SetConfigType("yaml")
 }
 
 func validate(_ *Recipe) error {
 	return nil
+}
+
+func printRecipe(recipe *Recipe) {
+	jsonConfig, err := json.MarshalIndent(recipe, "", "  ")
+	if err != nil {
+		fmt.Println("error:", err)
+		return
+	}
+
+	fmt.Printf("recipe path: %s\n", viper.ConfigFileUsed())
+	fmt.Printf("%v\n", string(jsonConfig))
 }

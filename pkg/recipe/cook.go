@@ -20,6 +20,11 @@ func Cook(recipePath string, hooks ...Hooks) error {
 		return err
 	}
 
+	// debug recipe
+	if recipe.Debug {
+		printRecipe(recipe)
+	}
+
 	// validate config
 	if err := validate(recipe); err != nil {
 		return err
