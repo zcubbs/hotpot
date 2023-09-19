@@ -51,14 +51,15 @@ func Install(values Values, kubeconfig string, debug bool) error {
 	}
 
 	err = helm.Install(helm.Chart{
-		Name:        traefikChartName,
-		Repo:        traefikHelmRepoName,
-		URL:         traefikHelmRepoUrl,
-		Version:     traefikChartVersion,
-		Values:      nil,
-		ValuesFiles: []string{valuesPath},
-		Namespace:   traefikNamespace,
-		Upgrade:     true,
+		Name:            traefikChartName,
+		Repo:            traefikHelmRepoName,
+		URL:             traefikHelmRepoUrl,
+		Version:         traefikChartVersion,
+		Values:          nil,
+		ValuesFiles:     []string{valuesPath},
+		Namespace:       traefikNamespace,
+		Upgrade:         true,
+		CreateNamespace: true,
 	}, kubeconfig, debug)
 	if err != nil {
 		return err

@@ -27,9 +27,12 @@ const (
 	ovhAppSecretEnvKey   = "OVH_APPLICATION_SECRET"
 	ovhConsumerKeyEnvKey = "OVH_CONSUMER_KEY"
 
-	//azureClientIDEnvKey     = "AZURE_CLIENT_ID"
+	azureClientIDEnvKey = "AZURE_CLIENT_ID"
 	///* #nosec */
-	//azureClientSecretEnvKey = "AZURE_CLIENT_SECRET"
+	azureClientSecretEnvKey = "AZURE_CLIENT_SECRET"
+	azureResourceGroupKey   = "AZURE_RESOURCE_GROUP"
+	azureSubscriptionIDKey  = "AZURE_SUBSCRIPTION_ID"
+	azureTenantIDKey        = "AZURE_TENANT_ID"
 )
 
 func configureDNSChallengeVars(values Values, kubeconfig string, debug bool) error {
@@ -54,6 +57,59 @@ func configureDNSChallengeVars(values Values, kubeconfig string, debug bool) err
 
 func configureCloudflare(_ Values, _ string, _ bool) error {
 	return fmt.Errorf("cloudflare provider not implemented")
+}
+
+func configureAzure(values Values, kubeconfig string, debug bool) error {
+	// load env vars
+	azureClientId := os.Getenv(azureClientIDEnvKey)
+	azureClientSecret := os.Getenv(azureClientSecretEnvKey)
+	azureResourceGroup := os.Getenv(azureResourceGroupKey)
+	azureSubscriptionID := os.Getenv(azureSubscriptionIDKey)
+	azureTenantID := os.Getenv(azureTenantIDKey)
+
+	// validate env vars
+	if azureClientId == "" {
+		return fmt.Errorf("azure client id is required")
+	}
+
+	if azureClientSecret == "" {
+		return fmt.Errorf("azure client secret is required")
+	}
+
+	if azureResourceGroup == "" {
+		return fmt.Errorf("azure resource group is required")
+	}
+
+	if azureSubscriptionID == "" {
+		return fmt.Errorf("azure subscription id is required")
+	}
+
+	if azureTenantID == "" {
+		return fmt.Errorf("azure tenant id is required")
+	}
+
+	// create namespace
+	err := kubernetes.CreateNamespace(
+		kubeconfig,
+		[]string{traefikNamespace},
+	)
+	if err != nil {
+		return fmt.Errorf("failed to create namespace %s \n %w", traefikNamespace, err)
+	}
+
+	// create secret
+	return createSecret(
+		map[string][]byte{
+			"AZURE_CLIENT_ID":       []byte(azureClientId),
+			"AZURE_CLIENT_SECRET":   []byte(azureClientSecret),
+			"AZURE_RESOURCE_GROUP":  []byte(azureResourceGroup),
+			"AZURE_SUBSCRIPTION_ID": []byte(azureSubscriptionID),
+			"AZURE_TENANT_ID":       []byte(azureTenantID),
+			"TZ":                    []byte(values.DnsTZ),
+		},
+		kubeconfig,
+		debug,
+	)
 }
 
 func configureOVH(values Values, kubeconfig string, debug bool) error {
@@ -90,20 +146,29 @@ func configureOVH(values Values, kubeconfig string, debug bool) error {
 	}
 
 	// create secret
-	err = kubernetes.CreateGenericSecret(
+	return createSecret(
+		map[string][]byte{
+			"OVH_ENDPOINT":           []byte(ovhEndpoint),
+			"OVH_APPLICATION_KEY":    []byte(ovhAppKey),
+			"OVH_APPLICATION_SECRET": []byte(ovhAppSecret),
+			"OVH_CONSUMER_KEY":       []byte(ovhConsumerKey),
+			"TZ":                     []byte(values.DnsTZ),
+		},
+		kubeconfig,
+		debug,
+	)
+}
+
+func createSecret(data map[string][]byte, kubeconfig string, debug bool) error {
+	// create secret
+	err := kubernetes.CreateGenericSecret(
 		context.Background(),
 		kubeconfig,
 		v1.Secret{
 			ObjectMeta: metav1.ObjectMeta{
 				Name: traefikProviderCredentialsSecretName,
 			},
-			Data: map[string][]byte{
-				"OVH_ENDPOINT":           []byte(ovhEndpoint),
-				"OVH_APPLICATION_KEY":    []byte(ovhAppKey),
-				"OVH_APPLICATION_SECRET": []byte(ovhAppSecret),
-				"OVH_CONSUMER_KEY":       []byte(ovhConsumerKey),
-				"TZ":                     []byte(values.DnsTZ),
-			},
+			Data: data,
 		},
 		[]string{traefikNamespace},
 		true,
@@ -114,8 +179,4 @@ func configureOVH(values Values, kubeconfig string, debug bool) error {
 	}
 
 	return nil
-}
-
-func configureAzure(_ Values, _ string, _ bool) error {
-	return fmt.Errorf("azure provider not implemented")
 }

@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	argocdChartName    = "argocd"
+	argocdChartName    = "argo-cd"
 	argocdHelmRepoName = "argocd"
 	argocdHelmRepoURL  = "https://argoproj.github.io/argo-helm"
 	argocdChartVersion = "" // latest
@@ -35,14 +35,15 @@ func Install(values Values, kubeconfig string, debug bool) error {
 	}
 
 	err := helm.Install(helm.Chart{
-		Name:        argocdChartName,
-		Repo:        argocdHelmRepoName,
-		URL:         argocdHelmRepoURL,
-		Version:     values.ChartVersion,
-		Values:      vals,
-		ValuesFiles: nil,
-		Namespace:   argocdNamespace,
-		Upgrade:     true,
+		Name:            argocdChartName,
+		Repo:            argocdHelmRepoName,
+		URL:             argocdHelmRepoURL,
+		Version:         values.ChartVersion,
+		Values:          vals,
+		ValuesFiles:     nil,
+		Namespace:       argocdNamespace,
+		Upgrade:         true,
+		CreateNamespace: true,
 	}, kubeconfig, debug)
 	if err != nil {
 		return err
