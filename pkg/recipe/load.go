@@ -32,7 +32,10 @@ func initViperPresets(path string) {
 	viper.SetConfigType("yaml")
 }
 
-func validate(_ *Recipe) error {
+func validate(r *Recipe) error {
+	if r.Kubeconfig == "" {
+		r.Kubeconfig = "/etc/rancher/k3s/k3s.yaml"
+	}
 	return nil
 }
 

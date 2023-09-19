@@ -14,7 +14,7 @@ const (
 	traefikHelmRepoName = "traefik"
 	traefikHelmRepoUrl  = "https://helm.traefik.io/traefik"
 	traefikChartName    = "traefik"
-	traefikChartVersion = "latest"
+	traefikChartVersion = "" // latest
 	traefikNamespace    = "traefik"
 
 	traefikDnsResolver = "letsencrypt"
@@ -26,7 +26,7 @@ const (
 )
 
 func Install(values Values, kubeconfig string, debug bool) error {
-	if err := validateValues(values); err != nil {
+	if err := validateValues(&values); err != nil {
 		return err
 	}
 
@@ -58,6 +58,7 @@ func Install(values Values, kubeconfig string, debug bool) error {
 		Values:      nil,
 		ValuesFiles: []string{valuesPath},
 		Namespace:   traefikNamespace,
+		Upgrade:     true,
 	}, kubeconfig, debug)
 	if err != nil {
 		return err
@@ -88,10 +89,10 @@ func Uninstall(kubeconfig string, debug bool) error {
 }
 
 func getTmpValuesFilePath() string {
-	return os.TempDir() + "/tmp/values-" + time.Now().Format("20060102150405") + ".yaml"
+	return os.TempDir() + "/values-" + time.Now().Format("20060102150405") + ".yaml"
 }
 
-func validateValues(values Values) error {
+func validateValues(values *Values) error {
 	if values.IngressProvider != "" && values.DnsProvider != "" {
 		return fmt.Errorf("can't set both ingressProvider and dnsProvider")
 	}
@@ -149,8 +150,8 @@ global:
   {{- else }}
     level: INFO
   {{- end }}
-  accessLogs:	
-  {{- if .EnableAccessLog }}	
+  accessLogs:
+  {{- if .EnableAccessLog }}
     enabled: true
   {{- else }}
     enabled: false
@@ -184,7 +185,7 @@ additionalArguments:
   - "--entrypoints.websecure.proxyProtocol.trustedIPs=127.0.0.1/32,{{ .ProxyProtocolTrustedIPs }}"
   {{- end }}
   {{- end }}
-  {{- if IngressProvider }}
+  {{- if .IngressProvider }}
   - "{{ printf "%s=%s" "--providers.kubernetesIngress.ingressClass" .IngressProvider }}"
   {{- end }}
   {{- if .DnsProvider }}
@@ -239,8 +240,9 @@ deployment:
         - name: data
           mountPath: /data
 
+{{- if .DnsProvider }}
 envFrom:
   - secretRef:
-      name: traefik-dns-account-credentials
-
+      name: traefik-dns-provider-credentials
+{{- end }}
 `

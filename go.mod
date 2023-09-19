@@ -2,12 +2,13 @@ module github.com/zcubbs/hotpot
 
 go 1.21
 
+replace github.com/zcubbs/x => D:\dev\personal\x
+
 require (
 	github.com/charmbracelet/lipgloss v0.8.0
 	github.com/spf13/cobra v1.7.0
 	github.com/spf13/viper v1.16.0
 	github.com/zcubbs/x v0.1.3
-	gopkg.in/yaml.v2 v2.4.0
 	k8s.io/api v0.28.2
 	k8s.io/apimachinery v0.28.2
 )
@@ -138,6 +139,7 @@ require (
 	google.golang.org/protobuf v1.31.0 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
+	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	helm.sh/helm/v3 v3.12.3 // indirect
 	k8s.io/apiextensions-apiserver v0.28.2 // indirect

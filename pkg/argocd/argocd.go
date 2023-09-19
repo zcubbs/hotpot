@@ -12,7 +12,7 @@ const (
 	argocdChartName    = "argocd"
 	argocdHelmRepoName = "argocd"
 	argocdHelmRepoURL  = "https://argoproj.github.io/argo-helm"
-	argocdChartVersion = "latest"
+	argocdChartVersion = "" // latest
 	argocdNamespace    = "argocd"
 )
 
@@ -42,6 +42,7 @@ func Install(values Values, kubeconfig string, debug bool) error {
 		Values:      vals,
 		ValuesFiles: nil,
 		Namespace:   argocdNamespace,
+		Upgrade:     true,
 	}, kubeconfig, debug)
 	if err != nil {
 		return err

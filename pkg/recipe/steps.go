@@ -1,10 +1,12 @@
 package recipe
 
 import (
+	"fmt"
 	"github.com/zcubbs/hotpot/pkg/argocd"
 	"github.com/zcubbs/hotpot/pkg/traefik"
 	"github.com/zcubbs/x/helm"
 	"github.com/zcubbs/x/k3s"
+	"strings"
 )
 
 type step struct {
@@ -17,16 +19,21 @@ func checkPrerequisites(_ *Recipe) error {
 }
 
 func installK3s(r *Recipe) error {
+	fmt.Printf("🍕 Adding k3s... \n")
 	k3sCfg := r.Ingredients.K3s
 	if k3sCfg.PurgeExisting {
+		fmt.Printf("purging existing k3s cluster... \n")
 		err := k3s.Uninstall(r.Debug)
-		if err != nil {
+		if err != nil && !strings.Contains(err.Error(), "no such file or directory") { // ignore if k3s is not installed
 			return err
 		}
 	}
-	ensureTraefikIsDisabled(k3sCfg.Disable)
+	disableOpts := ensureTraefikIsDisabled(k3sCfg.Disable)
+	if r.Debug {
+		fmt.Printf("k3s disable options: %+v\n", disableOpts)
+	}
 	return k3s.Install(k3s.Config{
-		Disable:                 k3sCfg.Disable,
+		Disable:                 disableOpts,
 		TlsSan:                  k3sCfg.TlsSan,
 		DataDir:                 k3sCfg.DataDir,
 		DefaultLocalStoragePath: k3sCfg.DefaultLocalStoragePath,
@@ -36,6 +43,7 @@ func installK3s(r *Recipe) error {
 
 func ensureTraefikIsDisabled(options []string) []string {
 	var found bool
+	var updatedOptions []string
 	for _, v := range options {
 		if v == "traefik" {
 			found = true
@@ -43,12 +51,13 @@ func ensureTraefikIsDisabled(options []string) []string {
 		}
 	}
 	if !found {
-		options = append(options, "traefik")
+		updatedOptions = append(options, "traefik")
 	}
-	return options
+	return updatedOptions
 }
 
 func installHelm(cfg *Recipe) error {
+	fmt.Printf("🍉 Adding helm cli... \n")
 	ok, err := helm.IsHelmInstalled()
 	if err != nil {
 		return err
@@ -65,14 +74,16 @@ func installHelm(cfg *Recipe) error {
 }
 
 func installCertManager(_ *Recipe) error {
+	fmt.Printf("🍙 Adding cert-manager... \n")
 	return nil
 }
 
 func installTraefik(r *Recipe) error {
+	fmt.Printf("🌶️  Adding traefik... \n")
 	traefikCfg := r.Ingredients.Traefik
 	if traefikCfg.PurgeExisting {
 		err := traefik.Uninstall(r.Kubeconfig, r.Debug)
-		if err != nil {
+		if err != nil && !strings.Contains(err.Error(), "not found") {
 			return err
 		}
 	}
@@ -108,9 +119,10 @@ func installTraefik(r *Recipe) error {
 }
 
 func installArgocd(r *Recipe) error {
+	fmt.Printf("🥪 Adding argocd... \n")
 	if r.Ingredients.ArgoCD.PurgeExisting {
 		err := argocd.Uninstall(r.Kubeconfig, r.Debug)
-		if err != nil {
+		if err != nil && !strings.Contains(err.Error(), "not found") {
 			return err
 		}
 	}
