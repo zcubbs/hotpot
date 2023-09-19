@@ -23,8 +23,8 @@ type CertManagerConfig struct {
 type Node struct {
 	Ip          string   `mapstructure:"ip" json:"ip" yaml:"ip"`
 	MinDiskSize string   `mapstructure:"minDiskSize" json:"minDiskSize" yaml:"minDiskSize"`
-	MinCpu      string   `mapstructure:"minCpu" json:"minCpu" yaml:"minCpu"`
-	MinMemory   string   `mapstructure:"minMemory" json:"minMemory" yaml:"minMemory"`
+	MinCpu      string   `mapstructure:"minCpu" json:"minCpuCores" yaml:"minCpuCores"`
+	MinMemory   string   `mapstructure:"minMemory" json:"minMemorySize" yaml:"minMemorySize"`
 	CheckUrls   []string `mapstructure:"checkUrls" json:"checkUrls" yaml:"checkUrls"`
 }
 

@@ -22,7 +22,7 @@ var (
 
 	versionCmd = &cobra.Command{
 		Use:   "version",
-		Short: "Print the version number of linkup",
+		Short: "Print the version number of hotpot",
 		Long:  "",
 		Run: func(cmd *cobra.Command, args []string) {
 			fmt.Println(getVersion())
@@ -31,7 +31,7 @@ var (
 
 	aboutCmd = &cobra.Command{
 		Use:   "about",
-		Short: "Print the info about linkup",
+		Short: "Print information about hotpot",
 		Long:  "",
 		Run: func(cmd *cobra.Command, args []string) {
 			About()
@@ -78,8 +78,8 @@ Date: %s
 func getDescription() string {
 	return `
 HotPot is your go-to CLI utility that marries the simplicity of cooking
-with the robustness of Kubernetes deployments. Drawing inspiration from 
-crafting and culinary arts, HotPot serves up k3s clusters based on your 
-specific recipe (configuration). 
+with the robustness of Kubernetes deployments. Drawing inspiration from
+crafting and culinary arts, HotPot serves up k3s clusters based on your
+specific recipe (configuration).
 `
 }

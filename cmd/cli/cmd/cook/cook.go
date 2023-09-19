@@ -1,11 +1,12 @@
 package cook
 
 import (
+	"fmt"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/spf13/cobra"
 	"github.com/zcubbs/hotpot/pkg/recipe"
 	"github.com/zcubbs/x/must"
 	"github.com/zcubbs/x/progress"
-	"github.com/zcubbs/x/style"
 )
 
 var (
@@ -27,7 +28,8 @@ func cook() func() error {
 		return recipe.Cook(recipePath,
 			recipe.Hooks{
 				Pre: func() error {
-					style.PrintColoredHeader("Cooking the cluster")
+					style := lipgloss.NewStyle().Bold(true)
+					fmt.Println(style.Render("🍲 Cooking..."))
 					return nil
 				},
 				Post: func() error {

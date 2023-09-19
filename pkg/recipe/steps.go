@@ -18,6 +18,13 @@ func checkPrerequisites(_ *Recipe) error {
 
 func installK3s(r *Recipe) error {
 	k3sCfg := r.Ingredients.K3s
+	if k3sCfg.PurgeExisting {
+		err := k3s.Uninstall(r.Debug)
+		if err != nil {
+			return err
+		}
+	}
+	ensureTraefikIsDisabled(k3sCfg.Disable)
 	return k3s.Install(k3s.Config{
 		Disable:                 k3sCfg.Disable,
 		TlsSan:                  k3sCfg.TlsSan,
@@ -25,6 +32,20 @@ func installK3s(r *Recipe) error {
 		DefaultLocalStoragePath: k3sCfg.DefaultLocalStoragePath,
 		WriteKubeconfigMode:     k3sCfg.WriteKubeconfigMode,
 	}, r.Debug)
+}
+
+func ensureTraefikIsDisabled(options []string) []string {
+	var found bool
+	for _, v := range options {
+		if v == "traefik" {
+			found = true
+			break
+		}
+	}
+	if !found {
+		options = append(options, "traefik")
+	}
+	return options
 }
 
 func installHelm(cfg *Recipe) error {

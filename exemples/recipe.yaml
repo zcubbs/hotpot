@@ -1,0 +1,46 @@
+name: Hot Meal
+debug: true
+
+ingredients:
+  node:
+    ip: 127.0.0.1
+    minDiskSize: 80GB
+    minMemorySize: 8GB
+    minCpuCores: 4
+    checkUrls:
+      - https://github.com
+
+  certManager:
+    enabled: false
+
+  k3s:
+    enabled: true
+    version: v1.21.2+k3s1
+    tlsSan:
+      - 127.0.0.1
+    dataDir: /data/k3s
+    defaultLocalStoragePath: /data/local-path-provisioner
+    purgeExisting: true
+
+  traefik:
+    enabled: true
+    purgeExisting: true
+    enableAccessLog: true
+    enableDashboard: true
+    forwardHeaders: true
+    forwardHeadersInsecure: true
+    proxyProtocol: true
+    proxyProtocolInsecure: true
+    dnsChallenge: true
+    dnsChallengeProvider: ovh
+    dnsChallengeResolverEmail: test@example.com
+    debug: true
+
+  argocd:
+    enabled: true
+    purgeExisting: true
+    credentials:
+      username: admin
+      password: ARGOCD_ADMIN_PASSWORD
+      useEnv: true
+    projects: []
