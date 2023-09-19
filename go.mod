@@ -2,13 +2,11 @@ module github.com/zcubbs/hotpot
 
 go 1.21
 
-replace github.com/zcubbs/x => D:\dev\personal\x
-
 require (
 	github.com/charmbracelet/lipgloss v0.8.0
 	github.com/spf13/cobra v1.7.0
 	github.com/spf13/viper v1.16.0
-	github.com/zcubbs/x v0.1.3
+	github.com/zcubbs/x v0.1.4
 	k8s.io/api v0.28.2
 	k8s.io/apimachinery v0.28.2
 )
