@@ -21,11 +21,24 @@ type CertManagerConfig struct {
 }
 
 type Node struct {
-	Ip          string   `mapstructure:"ip" json:"ip" yaml:"ip"`
-	MinDiskSize string   `mapstructure:"minDiskSize" json:"minDiskSize" yaml:"minDiskSize"`
-	MinCpu      string   `mapstructure:"minCpu" json:"minCpuCores" yaml:"minCpuCores"`
-	MinMemory   string   `mapstructure:"minMemory" json:"minMemorySize" yaml:"minMemorySize"`
-	CheckUrls   []string `mapstructure:"checkUrls" json:"checkUrls" yaml:"checkUrls"`
+	Ip               string   `mapstructure:"ip" json:"ip" yaml:"ip"`
+	MinDiskSize      []Disk   `mapstructure:"minDiskSize" json:"minDiskSize" yaml:"minDiskSize"`
+	MinCpu           int      `mapstructure:"minCpu" json:"minCpu" yaml:"minCpu"`
+	MinMemory        string   `mapstructure:"minMemory" json:"minMemory" yaml:"minMemory"`
+	SupportedOs      []string `mapstructure:"supportedOs" json:"supportedOs" yaml:"supportedOs"`
+	SupportedArch    []string `mapstructure:"supportedArch" json:"supportedArch" yaml:"supportedArch"`
+	SupportedDistros []Distro `mapstructure:"supportedDistros" json:"supportedDistros" yaml:"supportedDistros"`
+	Curl             []string `mapstructure:"curl" json:"curl" yaml:"curl"`
+}
+
+type Disk struct {
+	Path string `mapstructure:"path" json:"path" yaml:"path"`
+	Size string `mapstructure:"size" json:"size" yaml:"size"`
+}
+
+type Distro struct {
+	Name    string `mapstructure:"name" json:"name" yaml:"name"`
+	Version string `mapstructure:"version" json:"version" yaml:"version"`
 }
 
 type K3sConfig struct {
@@ -39,6 +52,7 @@ type K3sConfig struct {
 	IsHA                    bool     `mapstructure:"isHA" json:"isHA" yaml:"isHA"`
 	IsServer                bool     `mapstructure:"isServer" json:"isServer" yaml:"isServer"`
 	ClusterToken            string   `mapstructure:"clusterToken" json:"clusterToken" yaml:"clusterToken"`
+	HttpsListenPort         string   `mapstructure:"httpsListenPort" json:"httpsListenPort" yaml:"httpsListenPort"`
 	ExtraArgs               []string `mapstructure:"extraArgs" json:"extraArgs" yaml:"extraArgs"`
 	PurgeExisting           bool     `mapstructure:"purgeExisting" json:"purgeExisting" yaml:"purgeExisting"`
 }

@@ -4,17 +4,25 @@ debug: true
 ingredients:
   node:
     ip: 127.0.0.1
-    minDiskSize: 80GB
-    minMemorySize: 8GB
-    minCpuCores: 4
-    checkUrls:
+    minDiskSize:
+      - path: /
+        size: 80G
+    minMemory: 8G
+    minCpu: 4
+    supportedOs:
+      - linux
+    supportedArch:
+      - x86_64
+      - amd64
+    supportedDistros:
+      - name: ubuntu
+        version: 20.04
+    curl:
       - https://github.com
-    telnet:
-      - ip: 127.0.0.1
-        port: 80
-    ssh:
-      - ip: 127.0.0.1
-        port: 22
+#    telnet: # removed as port scanning might be flagged by AV
+#      - 127.0.0.1:80
+#    ssh: # removed for now
+#      - 127.0.0.1
 
 
   certManager:

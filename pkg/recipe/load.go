@@ -30,12 +30,13 @@ func initViperPresets(path string) {
 	viper.AddConfigPath(dir)
 	viper.SetConfigName(file)
 	viper.SetConfigType("yaml")
+
+	for k, v := range defaults {
+		viper.SetDefault(k, v)
+	}
 }
 
-func validate(r *Recipe) error {
-	if r.Kubeconfig == "" {
-		r.Kubeconfig = "/etc/rancher/k3s/k3s.yaml"
-	}
+func validate(_ *Recipe) error {
 	return nil
 }
 
@@ -48,4 +49,9 @@ func printRecipe(recipe *Recipe) {
 
 	fmt.Printf("recipe path: %s\n", viper.ConfigFileUsed())
 	fmt.Printf("%v\n", string(jsonConfig))
+}
+
+var defaults = map[string]interface{}{
+	"kubeconfig":              "/etc/rancher/k3s/k3s.yaml",
+	"ingredients.k3s.disable": []string{"traefik"},
 }

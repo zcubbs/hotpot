@@ -3,6 +3,7 @@ package recipe
 import (
 	"fmt"
 	"github.com/zcubbs/hotpot/pkg/argocd"
+	"github.com/zcubbs/hotpot/pkg/host"
 	"github.com/zcubbs/hotpot/pkg/traefik"
 	"github.com/zcubbs/x/helm"
 	"github.com/zcubbs/x/k3s"
@@ -17,14 +18,44 @@ type step struct {
 func checkPrerequisites(r *Recipe) error {
 	fmt.Printf("🍳 Checking prerequisites... \n")
 	// check if os is linux
+	for _, v := range r.Ingredients.Node.SupportedOs {
+		if err := host.IsOS(v); err != nil {
+			return err
+		}
+	}
+	fmt.Printf(" - os: ok\n")
+
 	// check if arch is amd64
-	// check if distro is in list of supported distros/versions (cat /etc/os-release)
+	if err := host.IsArchIn(r.Ingredients.Node.SupportedArch); err != nil {
+		return err
+	}
+	fmt.Printf(" - arch: ok\n")
+
 	// check if ram is enough
+	if err := host.IsRAMEnough(r.Ingredients.Node.MinMemory); err != nil {
+		return err
+	}
+	fmt.Printf(" - ram: ok\n")
+
 	// check if cpu is enough
+	if err := host.IsCPUEnough(r.Ingredients.Node.MinCpu); err != nil {
+		return err
+	}
+	fmt.Printf(" - cpu: ok\n")
+
 	// check if disk is enough, check all disks
-	// check if telnet ok for list of ip:port (telnet <ip>:<port>)
+	for _, v := range r.Ingredients.Node.MinDiskSize {
+		if err := host.IsDiskSpaceEnough(v.Path, v.Size); err != nil {
+			return err
+		}
+	}
+	fmt.Printf(" - disk: ok\n")
+
 	// check if curl ok for list of url (curl <url>)
-	// check if ssh ok for list of ip (ssh <ip>)
+	if err := host.IsCurlOK(r.Ingredients.Node.Curl); err != nil {
+		return err
+	}
+	fmt.Printf(" - curl: ok\n")
 
 	return nil
 }
@@ -49,6 +80,7 @@ func installK3s(r *Recipe) error {
 		DataDir:                 k3sCfg.DataDir,
 		DefaultLocalStoragePath: k3sCfg.DefaultLocalStoragePath,
 		WriteKubeconfigMode:     k3sCfg.WriteKubeconfigMode,
+		HttpsListenPort:         k3sCfg.HttpsListenPort,
 	}, r.Debug)
 }
 
