@@ -174,15 +174,58 @@ func installArgocd(r *Recipe) error {
 	return argocd.Install(v, r.Kubeconfig, r.Debug)
 }
 
-func configureArgocdRepos(r *Recipe) error {
+func configureArgocdRepos(r *Recipe, repos []ArgocdRepository) error {
+	for _, ar := range repos {
+		repo := argocd.Repository{
+			Name:     ar.Name,
+			Url:      ar.Url,
+			Username: ar.Credentials.Username,
+			Password: ar.Credentials.Password,
+			Type:     string(ar.Type),
+		}
+		err := argocd.CreateRepository(repo, r.Kubeconfig, r.Debug)
+		if err != nil {
+			return err
+		}
+		fmt.Printf(" - repository: %s ok\n", ar.Name)
+	}
 	return nil
 }
 
 func configureArgocdProjects(r *Recipe) error {
+	for _, project := range r.Ingredients.ArgoCD.Projects {
+		p := argocd.Project{
+			Name: project.Name,
+		}
+		err := argocd.CreateProject(p, r.Kubeconfig, r.Debug)
+		if err != nil {
+			return err
+		}
+		fmt.Printf(" - project: %s\n", project.Name)
+
+		if err := configureArgocdRepos(r, project.Repositories); err != nil {
+			return err
+		}
+
+		if err := configureArgocdApps(r, project.Apps); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
-func configureArgocdApps(r *Recipe) error {
+func configureArgocdApps(r *Recipe, apps []App) error {
+	for _, app := range apps {
+		a := argocd.Application{
+			Name:      app.Name,
+			Namespace: app.Namespace,
+		}
+		err := argocd.CreateApplication(a, r.Kubeconfig, r.Debug)
+		if err != nil {
+			return err
+		}
+		fmt.Printf(" - application: %s ok\n", app.Name)
+	}
 	return nil
 }
 

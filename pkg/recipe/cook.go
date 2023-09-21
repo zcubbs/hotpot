@@ -45,9 +45,7 @@ func Cook(recipePath string, hooks ...Hooks) error {
 		step{f: installCertManager, c: recipe.Ingredients.CertManager.Enabled},
 		step{f: installTraefik, c: recipe.Ingredients.Traefik.Enabled},
 		step{f: installArgocd, c: recipe.Ingredients.ArgoCD.Enabled},
-		step{f: configureArgocdRepos, c: recipe.Ingredients.ArgoCD.Enabled},
 		step{f: configureArgocdProjects, c: recipe.Ingredients.ArgoCD.Enabled},
-		step{f: configureArgocdApps, c: recipe.Ingredients.ArgoCD.Enabled},
 		step{f: printKubeconfig, c: recipe.Debug},
 	); err != nil {
 		return err

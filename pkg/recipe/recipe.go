@@ -95,9 +95,9 @@ type ArgoCDCredentials struct {
 }
 
 type Project struct {
-	Name         string       `mapstructure:"name" json:"name" yaml:"name"`
-	Repositories []GitopsRepo `mapstructure:"repositories" json:"repositories" yaml:"repositories"`
-	Apps         []App        `mapstructure:"apps" json:"apps" yaml:"apps"`
+	Name         string             `mapstructure:"name" json:"name" yaml:"name"`
+	Repositories []ArgocdRepository `mapstructure:"repositories" json:"repositories" yaml:"repositories"`
+	Apps         []App              `mapstructure:"apps" json:"apps" yaml:"apps"`
 }
 
 type App struct {
@@ -124,14 +124,14 @@ type AppManifest struct {
 	Path     string `mapstructure:"path" json:"path" yaml:"path"`
 }
 
-type GitopsRepo struct {
-	Name        string                `mapstructure:"name" json:"name" yaml:"name"`
-	Url         string                `mapstructure:"url" json:"url" yaml:"url"`
-	Type        GitopsRepoType        `mapstructure:"type" json:"type" yaml:"type"`
-	Credentials GitopsRepoCredentials `mapstructure:"credentials" json:"credentials" yaml:"credentials"`
+type ArgocdRepository struct {
+	Name        string                      `mapstructure:"name" json:"name" yaml:"name"`
+	Url         string                      `mapstructure:"url" json:"url" yaml:"url"`
+	Type        ArgocdRepositoryType        `mapstructure:"type" json:"type" yaml:"type"`
+	Credentials ArgocdRepositoryCredentials `mapstructure:"credentials" json:"credentials" yaml:"credentials"`
 }
 
-type GitopsRepoCredentials struct {
+type ArgocdRepositoryCredentials struct {
 	Username string `mapstructure:"username" json:"username" yaml:"username"`
 	Password string `mapstructure:"password" json:"password" yaml:"password"`
 	UseVault bool   `mapstructure:"useVault" json:"useVault" yaml:"useVault"`
@@ -146,9 +146,9 @@ type ContainerRegistryCredentials struct {
 	UseEnv   bool   `mapstructure:"useEnv" json:"useEnv" yaml:"useEnv"`
 }
 
-type GitopsRepoType string
+type ArgocdRepositoryType string
 
 const (
-	GitopsRepoTypeHelm GitopsRepoType = "helm"
-	GitopsRepoTypeGit  GitopsRepoType = "git"
+	GitopsRepoTypeHelm ArgocdRepositoryType = "helm"
+	GitopsRepoTypeGit  ArgocdRepositoryType = "git"
 )
