@@ -1,5 +1,12 @@
 package recipe
 
+type ArgocdRepositoryType string
+
+const (
+	GitopsRepoTypeHelm ArgocdRepositoryType = "helm"
+	GitopsRepoTypeGit  ArgocdRepositoryType = "git"
+)
+
 type Recipe struct {
 	Name       string `mapstructure:"name" json:"name" yaml:"name"`
 	Kubeconfig string `mapstructure:"kubeconfig" json:"kubeconfig" yaml:"kubeconfig"`
@@ -14,6 +21,7 @@ type Ingredients struct {
 	Traefik     TraefikConfig     `mapstructure:"traefik" json:"traefik" yaml:"traefik"`
 	K3s         K3sConfig         `mapstructure:"k3s" json:"k3s" yaml:"k3s"`
 	ArgoCD      ArgoCDConfig      `mapstructure:"argocd" json:"argocd" yaml:"argocd"`
+	Secrets     SecretsConfig     `mapstructure:"secrets" json:"secrets" yaml:"secrets"`
 }
 
 type CertManagerConfig struct {
@@ -21,6 +29,7 @@ type CertManagerConfig struct {
 }
 
 type Node struct {
+	Check            bool     `mapstructure:"check" json:"check" yaml:"check"`
 	Ip               string   `mapstructure:"ip" json:"ip" yaml:"ip"`
 	MinDiskSize      []Disk   `mapstructure:"minDiskSize" json:"minDiskSize" yaml:"minDiskSize"`
 	MinCpu           int      `mapstructure:"minCpu" json:"minCpu" yaml:"minCpu"`
@@ -81,17 +90,11 @@ type TraefikConfig struct {
 }
 
 type ArgoCDConfig struct {
-	Enabled       bool              `mapstructure:"enabled" json:"enabled" yaml:"enabled"`
-	Projects      []Project         `mapstructure:"projects" json:"projects" yaml:"projects"`
-	Credentials   ArgoCDCredentials `mapstructure:"credentials" json:"credentials" yaml:"credentials"`
-	PurgeExisting bool              `mapstructure:"purgeExisting" json:"purgeExisting" yaml:"purgeExisting"`
-}
-
-type ArgoCDCredentials struct {
-	Username string `mapstructure:"username" json:"username" yaml:"username"`
-	Password string `mapstructure:"password" json:"password" yaml:"password"`
-	UseVault bool   `mapstructure:"useVault" json:"useVault" yaml:"useVault"`
-	UseEnv   bool   `mapstructure:"useEnv" json:"useEnv" yaml:"useEnv"`
+	Enabled             bool      `mapstructure:"enabled" json:"enabled" yaml:"enabled"`
+	Projects            []Project `mapstructure:"projects" json:"projects" yaml:"projects"`
+	AdminPassword       string    `mapstructure:"adminPassword" json:"adminPassword" yaml:"adminPassword"`
+	AdminPasswordHashed bool      `mapstructure:"adminPasswordHashed" json:"adminPasswordHashed" yaml:"adminPasswordHashed"`
+	PurgeExisting       bool      `mapstructure:"purgeExisting" json:"purgeExisting" yaml:"purgeExisting"`
 }
 
 type Project struct {
@@ -138,17 +141,16 @@ type ArgocdRepositoryCredentials struct {
 	UseEnv   bool   `mapstructure:"useEnv" json:"useEnv" yaml:"useEnv"`
 }
 
-type ContainerRegistryCredentials struct {
-	Username string `mapstructure:"username" json:"username" yaml:"username"`
-	Password string `mapstructure:"password" json:"password" yaml:"password"`
-	Url      string `mapstructure:"url" json:"url" yaml:"url"`
-	UseVault bool   `mapstructure:"useVault" json:"useVault" yaml:"useVault"`
-	UseEnv   bool   `mapstructure:"useEnv" json:"useEnv" yaml:"useEnv"`
+type SecretsConfig struct {
+	Enabled             bool                           `mapstructure:"enabled" json:"enabled" yaml:"enabled"`
+	ContainerRegistries []ContainerRegistryCredentials `mapstructure:"containerRegistries" json:"containerRegistries" yaml:"containerRegistries"`
 }
 
-type ArgocdRepositoryType string
-
-const (
-	GitopsRepoTypeHelm ArgocdRepositoryType = "helm"
-	GitopsRepoTypeGit  ArgocdRepositoryType = "git"
-)
+type ContainerRegistryCredentials struct {
+	Username   string   `mapstructure:"username" json:"username" yaml:"username"`
+	Password   string   `mapstructure:"password" json:"password" yaml:"password"`
+	Url        string   `mapstructure:"url" json:"url" yaml:"url"`
+	Namespaces []string `mapstructure:"namespaces" json:"namespaces" yaml:"namespaces"`
+	UseVault   bool     `mapstructure:"useVault" json:"useVault" yaml:"useVault"`
+	UseEnv     bool     `mapstructure:"useEnv" json:"useEnv" yaml:"useEnv"`
+}

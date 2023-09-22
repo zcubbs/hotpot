@@ -39,9 +39,9 @@ func Cook(recipePath string, hooks ...Hooks) error {
 
 	// add steps
 	if err := add(recipe,
-		step{f: checkPrerequisites, c: true},
+		step{f: checkPrerequisites, c: recipe.Ingredients.Node.Check},
 		step{f: installK3s, c: recipe.Ingredients.K3s.Enabled},
-		step{f: installHelm, c: true},
+		step{f: createSecrets, c: recipe.Ingredients.Secrets.Enabled},
 		step{f: installCertManager, c: recipe.Ingredients.CertManager.Enabled},
 		step{f: installTraefik, c: recipe.Ingredients.Traefik.Enabled},
 		step{f: installArgocd, c: recipe.Ingredients.ArgoCD.Enabled},

@@ -3,6 +3,7 @@ debug: true
 
 ingredients:
   node:
+    check: true
     ip: 127.0.0.1
     minDiskSize:
       - path: /
@@ -28,7 +29,7 @@ ingredients:
     enabled: false
 
   k3s:
-    enabled: true
+    enabled: false
     version: v1.21.2+k3s1
     tlsSan:
       - 127.0.0.1
@@ -37,7 +38,7 @@ ingredients:
     purgeExisting: false
 
   traefik:
-    enabled: true
+    enabled: false
     purgeExisting: false
     enableAccessLog: true
     enableDashboard: true
@@ -50,34 +51,40 @@ ingredients:
     dnsChallengeResolverEmail: test@example.com
     debug: true
 
+  secrets:
+    enabled: true
+    containerRegistries:
+      - name: dockerhub
+        url: HOTPOT_CONTAINER_REGISTRY_URL
+        username: env.HOTPOT_CONTAINER_REGISTRY_USERNAME
+        password: env.HOTPOT_CONTAINER_REGISTRY_PASSWORD
+        namespaces:
+          - hub
+
   argocd:
     enabled: true
     purgeExisting: false
-    credentials:
-      username: admin
-      password: HOTPOT_ARGOCD_ADMIN_PASSWORD
-      useEnv: true
+    adminPassword: env.HOTPOT_ARGOCD_ADMIN_PASSWORD
+    adminPasswordHashed: false
     projects:
-      - name: default
-        description: Default project
+      - name: hotpot
+        description: Hotpot GitOps
         repositories:
           - name: gitops-private-repo
-            url: https://test/test.git
+            url: https://github.com/zcubbs/hotpot-gitops-test-private-repo.git
             type: git
             credentials:
-              username: HOTPOT_GITOPS_REPO_USERNAME
-              password: HOTPOT_GITOPS_REPO_PASSWORD
-              useEnv: true
+              username: env.HOTPOT_GITOPS_REPO_USERNAME
+              password: env.HOTPOT_GITOPS_REPO_PASSWORD
           - name: helm-private-repo
-            url: https://test
+            url: https://github.com/zcubbs/hotpot-charts-test-private-repo.git
             type: helm
             credentials:
-              username: HOTPOT_HELM_REPO_USERNAME
-              password: HOTPOT_HELM_REPO_PASSWORD
-              useEnv: true
+              username: env.HOTPOT_HELM_REPO_USERNAME
+              password: env.HOTPOT_HELM_REPO_PASSWORD
         apps:
           - name: hub
-            repo: https://test/test.git
-            path: hub
+            repo: https://github.com/zcubbs/hotpot-gitops-test-private-repo.git
+            path: hub/chart
             revision: main
-            namespace: hub/chart
+            namespace: hub

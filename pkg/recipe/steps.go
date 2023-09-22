@@ -7,6 +7,7 @@ import (
 	"github.com/zcubbs/hotpot/pkg/traefik"
 	"github.com/zcubbs/x/helm"
 	"github.com/zcubbs/x/k3s"
+	"os"
 	"strings"
 )
 
@@ -74,7 +75,7 @@ func installK3s(r *Recipe) error {
 	if r.Debug {
 		fmt.Printf("k3s disable options: %+v\n", disableOpts)
 	}
-	return k3s.Install(k3s.Config{
+	err := k3s.Install(k3s.Config{
 		Disable:                 disableOpts,
 		TlsSan:                  k3sCfg.TlsSan,
 		DataDir:                 k3sCfg.DataDir,
@@ -82,6 +83,11 @@ func installK3s(r *Recipe) error {
 		WriteKubeconfigMode:     k3sCfg.WriteKubeconfigMode,
 		HttpsListenPort:         k3sCfg.HttpsListenPort,
 	}, r.Debug)
+	if err != nil {
+		return err
+	}
+
+	return installHelm(r)
 }
 
 func ensureTraefikIsDisabled(options []string) []string {
@@ -170,12 +176,45 @@ func installArgocd(r *Recipe) error {
 		}
 	}
 
-	v := argocd.Values{Insecure: true}
-	return argocd.Install(v, r.Kubeconfig, r.Debug)
+	v := argocd.Values{
+		Insecure: true,
+	}
+	err := argocd.Install(v, r.Kubeconfig, r.Debug)
+	if err != nil {
+		return err
+	}
+
+	if r.Ingredients.ArgoCD.AdminPassword != "" {
+		var password string
+		if strings.Contains(r.Ingredients.ArgoCD.AdminPassword, "env.") {
+			password = os.Getenv(strings.ReplaceAll(r.Ingredients.ArgoCD.AdminPassword, "env.", ""))
+			if password == "" {
+				return fmt.Errorf("failed to get argocd admin password from env")
+			}
+		} else {
+			password = r.Ingredients.ArgoCD.AdminPassword
+		}
+
+		v.AdminPassword = password
+		err = argocd.PatchPassword(v, r.Kubeconfig, r.Debug)
+		if err != nil {
+			return fmt.Errorf("failed to patch argocd admin password \n %w", err)
+		}
+		fmt.Printf(" - argocd admin password: ok\n")
+	}
+
+	return nil
 }
 
 func configureArgocdRepos(r *Recipe, repos []ArgocdRepository) error {
 	for _, ar := range repos {
+		creds := &ar.Credentials
+		if strings.Contains(creds.Username, "env.") {
+			creds.Username = os.Getenv(strings.ReplaceAll(creds.Username, "env.", ""))
+		}
+		if strings.Contains(creds.Password, "env.") {
+			creds.Password = os.Getenv(creds.Password)
+		}
 		repo := argocd.Repository{
 			Name:     ar.Name,
 			Url:      ar.Url,
@@ -226,6 +265,11 @@ func configureArgocdApps(r *Recipe, apps []App) error {
 		}
 		fmt.Printf(" - application: %s ok\n", app.Name)
 	}
+	return nil
+}
+
+func createSecrets(r *Recipe) error {
+	fmt.Printf("🍜 Adding secrets... \n")
 	return nil
 }
 

@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"github.com/zcubbs/x/helm"
 	"github.com/zcubbs/x/kubernetes"
+	"golang.org/x/crypto/bcrypt"
+	v1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"time"
 )
 
@@ -81,8 +84,43 @@ func Uninstall(kubeconfig string, debug bool) error {
 }
 
 type Values struct {
-	Insecure     bool
-	ChartVersion string
+	Insecure      bool
+	ChartVersion  string
+	AdminPassword string
+}
+
+func PatchPassword(values Values, kubeconfig string, debug bool) error {
+	hashedPassword, err := hashPassword(values.AdminPassword)
+	if err != nil {
+		return fmt.Errorf("failed to hash password: %w", err)
+	}
+	err = kubernetes.CreateGenericSecret(
+		context.Background(),
+		kubeconfig,
+		v1.Secret{
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "argocd-secret",
+				Namespace: argocdNamespace,
+			},
+			StringData: map[string]string{
+				"admin.password":      hashedPassword,
+				"admin.passwordMtime": "'$(date +%FT%T%Z)'",
+			},
+		},
+		[]string{argocdNamespace},
+		true,
+		debug,
+	)
+	if err != nil {
+		return fmt.Errorf("failed to create argocd-secret: %w", err)
+	}
+
+	return nil
+}
+
+func hashPassword(password string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 10)
+	return string(bytes), err
 }
 
 func validateValues(values Values) error {
