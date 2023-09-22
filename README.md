@@ -34,9 +34,11 @@ curl -sfL https://raw.githubusercontent.com/zcubbs/hotpot/main/scripts/install/i
 
 ## Configuration
 
-### Setup Let's Encrypt DNS Provider
+### ACME Providers
 
-### Setup Let's Encrypt DNS Provider
+Refer to documentation: https://doc.traefik.io/traefik/https/acme/#providers
+
+#### Supported DNS Providers
 
 | Provider  | Environment Variables                                                                                        | Recipe Config                                     |
 |-----------|--------------------------------------------------------------------------------------------------------------|---------------------------------------------------|
