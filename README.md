@@ -36,7 +36,7 @@ curl -sfL https://raw.githubusercontent.com/zcubbs/hotpot/main/scripts/install/i
 
 ### Setup Let's Encrypt DNS Provider
 
-- OVH:
+#### OVH:
 
 You will need to set the following environment variables: `OVH_ENDPOINT`, `OVH_APPLICATION_KEY`, `OVH_APPLICATION_SECRET`, `OVH_CONSUMER_KEY`
 
@@ -58,7 +58,7 @@ prepare the recipe:
     dnsChallengeResolverEmail: test@example.com
 ```
 
-- Azure:
+#### Azure:
 
 You will need to set the following environment variables: `AZURE_CLIENT_ID`, `AZURE_CLIENT_SECRET`, `AZURE_SUBSCRIPTION_ID`, `AZURE_TENANT_ID`, `AZURE_RESOURCE_GROUP`
 
