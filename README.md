@@ -36,47 +36,11 @@ curl -sfL https://raw.githubusercontent.com/zcubbs/hotpot/main/scripts/install/i
 
 ### Setup Let's Encrypt DNS Provider
 
-#### OVH:
+### Setup Let's Encrypt DNS Provider
 
-You will need to set the following environment variables: `OVH_ENDPOINT`, `OVH_APPLICATION_KEY`, `OVH_APPLICATION_SECRET`, `OVH_CONSUMER_KEY`
+| Provider  | Environment Variables                                                                                        | Example Setting                                                       | Recipe Preparation                                       |
+|-----------|--------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------|----------------------------------------------------------|
+| **OVH**   | `OVH_ENDPOINT`, `OVH_APPLICATION_KEY`, `OVH_APPLICATION_SECRET`, `OVH_CONSUMER_KEY`                          | ```bash export OVH_ENDPOINT=ovh-eu export OVH_APPLICATION_KEY=... ``` | ```yaml ... traefik: ... dnsChallengeProvider: ovh ```   |
+| **Azure** | `AZURE_CLIENT_ID`, `AZURE_CLIENT_SECRET`, `AZURE_SUBSCRIPTION_ID`, `AZURE_TENANT_ID`, `AZURE_RESOURCE_GROUP` | ```bash export AZURE_CLIENT_ID=... ```                                | ```yaml ... traefik: ... dnsChallengeProvider: azure ``` |
 
-Example:
-```bash
-export OVH_ENDPOINT=ovh-eu
-export OVH_APPLICATION_KEY=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-export OVH_APPLICATION_SECRET=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-export OVH_CONSUMER_KEY=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-```
 
-prepare the recipe:
-```
-...
-  traefik:
-    ...
-    dnsChallenge: true
-    dnsChallengeProvider: ovh
-    dnsChallengeResolverEmail: test@example.com
-```
-
-#### Azure:
-
-You will need to set the following environment variables: `AZURE_CLIENT_ID`, `AZURE_CLIENT_SECRET`, `AZURE_SUBSCRIPTION_ID`, `AZURE_TENANT_ID`, `AZURE_RESOURCE_GROUP`
-
-Example:
-```bash
-export AZURE_CLIENT_ID=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-export AZURE_CLIENT_SECRET=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-export AZURE_SUBSCRIPTION_ID=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-export AZURE_TENANT_ID=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-export AZURE_RESOURCE_GROUP=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-```
-
-prepare the recipe:
-```
-...
-  traefik:
-    ...
-    dnsChallenge: true
-    dnsChallengeProvider: azure
-    dnsChallengeResolverEmail: test@example.com
-```
