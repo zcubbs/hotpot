@@ -1,5 +1,10 @@
 package argocd
 
+import (
+	"fmt"
+	"github.com/zcubbs/x/kubernetes"
+)
+
 type Application struct {
 	Name             string   `json:"name"`
 	Namespace        string   `json:"namespace"`
@@ -20,7 +25,36 @@ type Application struct {
 	AllowEmpty       bool     `json:"allowEmpty"`
 }
 
-func CreateApplication(app Application, kubeconfig string, debug bool) error {
+func CreateApplication(app Application, _ string, debug bool) error {
+	if err := validateApp(app); err != nil {
+		return err
+	}
+
+	// create app
+	if app.IsOCI {
+		// Apply template
+		err := kubernetes.ApplyManifest(argoAppOciTmpl, app, debug)
+		if err != nil {
+			return err
+		}
+		return nil
+	}
+
+	return kubernetes.ApplyManifest(argoAppTmpl, app, debug)
+}
+
+func validateApp(app Application) error {
+	if !app.IsHelm && app.IsOCI {
+		return fmt.Errorf("oci flag can only be used with helm charts. helm is false")
+	}
+
+	if app.IsOCI && app.OCIChartName == "" {
+		return fmt.Errorf("oci chart name cannot be empty, when oci is true")
+	}
+
+	if (!app.IsOCI && !app.IsHelm) && app.Path == "" {
+		return fmt.Errorf("path cannot be empty, when helm is false")
+	}
 
 	return nil
 }
