@@ -45,4 +45,4 @@ Refer to documentation: https://doc.traefik.io/traefik/https/acme/#providers
 | **OVH**   | `OVH_ENDPOINT`, `OVH_APPLICATION_KEY`, `OVH_APPLICATION_SECRET`, `OVH_CONSUMER_KEY`                          | `ingredients.traefik.dnsChallengeProvider: ovh`   |
 | **Azure** | `AZURE_CLIENT_ID`, `AZURE_CLIENT_SECRET`, `AZURE_SUBSCRIPTION_ID`, `AZURE_TENANT_ID`, `AZURE_RESOURCE_GROUP` | `ingredients.traefik.dnsChallengeProvider: azure` |
 
-
+> **Note**: future versions of HotPot will support AWS Route53, Cloudflare, and other DNS providers.
