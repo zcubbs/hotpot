@@ -38,9 +38,9 @@ curl -sfL https://raw.githubusercontent.com/zcubbs/hotpot/main/scripts/install/i
 
 ### Setup Let's Encrypt DNS Provider
 
-| Provider  | Environment Variables                                                                                        | Example Setting                                                       | Recipe Preparation                                       |
-|-----------|--------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------|----------------------------------------------------------|
-| **OVH**   | `OVH_ENDPOINT`, `OVH_APPLICATION_KEY`, `OVH_APPLICATION_SECRET`, `OVH_CONSUMER_KEY`                          | ```bash export OVH_ENDPOINT=ovh-eu export OVH_APPLICATION_KEY=... ``` | ```yaml ... traefik: ... dnsChallengeProvider: ovh ```   |
-| **Azure** | `AZURE_CLIENT_ID`, `AZURE_CLIENT_SECRET`, `AZURE_SUBSCRIPTION_ID`, `AZURE_TENANT_ID`, `AZURE_RESOURCE_GROUP` | ```bash export AZURE_CLIENT_ID=... ```                                | ```yaml ... traefik: ... dnsChallengeProvider: azure ``` |
+| Provider  | Environment Variables                                                                                        | Recipe Config                                     |
+|-----------|--------------------------------------------------------------------------------------------------------------|---------------------------------------------------|
+| **OVH**   | `OVH_ENDPOINT`, `OVH_APPLICATION_KEY`, `OVH_APPLICATION_SECRET`, `OVH_CONSUMER_KEY`                          | `ingredients.traefik.dnsChallengeProvider: ovh`   |
+| **Azure** | `AZURE_CLIENT_ID`, `AZURE_CLIENT_SECRET`, `AZURE_SUBSCRIPTION_ID`, `AZURE_TENANT_ID`, `AZURE_RESOURCE_GROUP` | `ingredients.traefik.dnsChallengeProvider: azure` |
 
 
