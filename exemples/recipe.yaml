@@ -24,7 +24,6 @@ ingredients:
 #    ssh: # removed for now
 #      - 127.0.0.1
 
-
   certManager:
     enabled: false
 
@@ -56,6 +55,29 @@ ingredients:
     purgeExisting: false
     credentials:
       username: admin
-      password: ARGOCD_ADMIN_PASSWORD
+      password: HOTPOT_ARGOCD_ADMIN_PASSWORD
       useEnv: true
-    projects: []
+    projects:
+      - name: default
+        description: Default project
+        repositories:
+          - name: gitops-private-repo
+            url: https://test/test.git
+            type: git
+            credentials:
+              username: HOTPOT_GITOPS_REPO_USERNAME
+              password: HOTPOT_GITOPS_REPO_PASSWORD
+              useEnv: true
+          - name: helm-private-repo
+            url: https://test
+            type: helm
+            credentials:
+              username: HOTPOT_HELM_REPO_USERNAME
+              password: HOTPOT_HELM_REPO_PASSWORD
+              useEnv: true
+        apps:
+          - name: hub
+            repo: https://test/test.git
+            path: hub
+            revision: main
+            namespace: hub/chart
