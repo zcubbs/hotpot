@@ -22,6 +22,7 @@ type Ingredients struct {
 	K3s         K3sConfig         `mapstructure:"k3s" json:"k3s" yaml:"k3s"`
 	ArgoCD      ArgoCDConfig      `mapstructure:"argocd" json:"argocd" yaml:"argocd"`
 	Secrets     SecretsConfig     `mapstructure:"secrets" json:"secrets" yaml:"secrets"`
+	Gitops      GitopsConfig      `mapstructure:"gitops" json:"gitops" yaml:"gitops"`
 }
 
 type CertManagerConfig struct {
@@ -90,11 +91,16 @@ type TraefikConfig struct {
 }
 
 type ArgoCDConfig struct {
-	Enabled             bool      `mapstructure:"enabled" json:"enabled" yaml:"enabled"`
-	Projects            []Project `mapstructure:"projects" json:"projects" yaml:"projects"`
-	AdminPassword       string    `mapstructure:"adminPassword" json:"adminPassword" yaml:"adminPassword"`
-	AdminPasswordHashed bool      `mapstructure:"adminPasswordHashed" json:"adminPasswordHashed" yaml:"adminPasswordHashed"`
-	PurgeExisting       bool      `mapstructure:"purgeExisting" json:"purgeExisting" yaml:"purgeExisting"`
+	Enabled             bool   `mapstructure:"enabled" json:"enabled" yaml:"enabled"`
+	AdminPassword       string `mapstructure:"adminPassword" json:"adminPassword" yaml:"adminPassword"`
+	AdminPasswordHashed bool   `mapstructure:"adminPasswordHashed" json:"adminPasswordHashed" yaml:"adminPasswordHashed"`
+	PurgeExisting       bool   `mapstructure:"purgeExisting" json:"purgeExisting" yaml:"purgeExisting"`
+}
+
+type GitopsConfig struct {
+	Enabled       bool      `mapstructure:"enabled" json:"enabled" yaml:"enabled"`
+	PurgeExisting bool      `mapstructure:"purgeExisting" json:"purgeExisting" yaml:"purgeExisting"`
+	Projects      []Project `mapstructure:"projects" json:"projects" yaml:"projects"`
 }
 
 type Project struct {
@@ -104,27 +110,21 @@ type Project struct {
 }
 
 type App struct {
-	Name      string `mapstructure:"name" json:"name" yaml:"name"`
-	Repo      string `mapstructure:"repo" json:"repo" yaml:"repo"`
-	Revision  string `mapstructure:"revision" json:"revision" yaml:"revision"`
-	Path      string `mapstructure:"path" json:"path" yaml:"path"`
-	Namespace string `mapstructure:"namespace" json:"namespace" yaml:"namespace"`
-
-	Charts    []AppChart    `mapstructure:"chart" json:"chart" yaml:"chart"`
-	Manifests []AppManifest `mapstructure:"manifest" json:"manifest" yaml:"manifest"`
-}
-
-type AppChart struct {
-	Repo        string   `mapstructure:"repo" json:"repo" yaml:"repo"`
-	Revision    string   `mapstructure:"revision" json:"revision" yaml:"revision"`
-	Path        string   `mapstructure:"path" json:"path" yaml:"path"`
-	ValuesFiles []string `mapstructure:"valuesFiles" json:"valuesFiles" yaml:"valuesFiles"`
-}
-
-type AppManifest struct {
-	Repo     string `mapstructure:"repo" json:"repo" yaml:"repo"`
-	Revision string `mapstructure:"revision" json:"revision" yaml:"revision"`
-	Path     string `mapstructure:"path" json:"path" yaml:"path"`
+	Name             string   `mapstructure:"name" json:"name" yaml:"name"`
+	Namespace        string   `mapstructure:"namespace" json:"namespace" yaml:"namespace"`
+	Repo             string   `mapstructure:"repo" json:"repo" yaml:"repo"`
+	Revision         string   `mapstructure:"revision" json:"revision" yaml:"revision"`
+	Path             string   `mapstructure:"path" json:"path" yaml:"path"`
+	ValuesFiles      []string `mapstructure:"valuesFiles" json:"valuesFiles" yaml:"valuesFiles"`
+	IsHelm           bool     `mapstructure:"isHelm" json:"isHelm" yaml:"isHelm"`
+	IsOci            bool     `mapstructure:"isOci" json:"isOci" yaml:"isOci"`
+	OciChartName     string   `mapstructure:"ociChartName" json:"ociChartName" yaml:"ociChartName"`
+	OCIChartRevision string   `mapstructure:"ociChartRevision" json:"ociChartRevision" yaml:"ociChartRevision"`
+	Recurse          bool     `mapstructure:"recurse" json:"recurse" yaml:"recurse"`
+	CreateNamespace  bool     `mapstructure:"createNamespace" json:"createNamespace" yaml:"createNamespace"`
+	Prune            bool     `mapstructure:"prune" json:"prune" yaml:"prune"`
+	SelfHeal         bool     `mapstructure:"selfHeal" json:"selfHeal" yaml:"selfHeal"`
+	AllowEmpty       bool     `mapstructure:"allowEmpty" json:"allowEmpty" yaml:"allowEmpty"`
 }
 
 type ArgocdRepository struct {

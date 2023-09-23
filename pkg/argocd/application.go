@@ -23,6 +23,8 @@ type Application struct {
 	Prune            bool     `json:"prune"`
 	SelfHeal         bool     `json:"selfHeal"`
 	AllowEmpty       bool     `json:"allowEmpty"`
+
+	ArgoNamespace string `json:"argoNamespace"`
 }
 
 func CreateApplication(app Application, _ string, debug bool) error {
@@ -35,7 +37,7 @@ func CreateApplication(app Application, _ string, debug bool) error {
 		// Apply template
 		err := kubernetes.ApplyManifest(argoAppOciTmpl, app, debug)
 		if err != nil {
-			return err
+			return fmt.Errorf("failed to create application: %s, %w", app.Name, err)
 		}
 		return nil
 	}
@@ -54,6 +56,10 @@ func validateApp(app Application) error {
 
 	if (!app.IsOCI && !app.IsHelm) && app.Path == "" {
 		return fmt.Errorf("path cannot be empty, when helm is false")
+	}
+
+	if app.ArgoNamespace == "" {
+		app.ArgoNamespace = argocdNamespace
 	}
 
 	return nil

@@ -206,7 +206,7 @@ func installArgocd(r *Recipe) error {
 	return nil
 }
 
-func configureArgocdRepos(r *Recipe, repos []ArgocdRepository) error {
+func configureGitopsRepos(r *Recipe, repos []ArgocdRepository) error {
 	for _, ar := range repos {
 		creds := &ar.Credentials
 		if strings.Contains(creds.Username, "env.") {
@@ -231,8 +231,8 @@ func configureArgocdRepos(r *Recipe, repos []ArgocdRepository) error {
 	return nil
 }
 
-func configureArgocdProjects(r *Recipe) error {
-	for _, project := range r.Ingredients.ArgoCD.Projects {
+func configureGitopsProjects(r *Recipe) error {
+	for _, project := range r.Ingredients.Gitops.Projects {
 		p := argocd.Project{
 			Name: project.Name,
 		}
@@ -242,22 +242,37 @@ func configureArgocdProjects(r *Recipe) error {
 		}
 		fmt.Printf(" - project: %s\n", project.Name)
 
-		if err := configureArgocdRepos(r, project.Repositories); err != nil {
+		if err := configureGitopsRepos(r, project.Repositories); err != nil {
 			return err
 		}
 
-		if err := configureArgocdApps(r, project.Apps); err != nil {
+		if err := configureGitopsApps(r, project.Name, project.Apps); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func configureArgocdApps(r *Recipe, apps []App) error {
+func configureGitopsApps(r *Recipe, project string, apps []App) error {
 	for _, app := range apps {
 		a := argocd.Application{
-			Name:      app.Name,
-			Namespace: app.Namespace,
+			Name:             app.Name,
+			Namespace:        app.Namespace,
+			IsOCI:            app.IsOci,
+			OCIChartName:     app.OciChartName,
+			OCIChartRevision: app.OCIChartRevision,
+			OCIRepoURL:       app.Repo,
+			IsHelm:           app.IsHelm,
+			HelmValueFiles:   app.ValuesFiles,
+			Project:          project,
+			RepoURL:          app.Repo,
+			TargetRevision:   app.Revision,
+			Path:             app.Path,
+			Recurse:          app.Recurse,
+			CreateNamespace:  app.CreateNamespace,
+			Prune:            app.Prune,
+			SelfHeal:         app.SelfHeal,
+			AllowEmpty:       app.AllowEmpty,
 		}
 		err := argocd.CreateApplication(a, r.Kubeconfig, r.Debug)
 		if err != nil {

@@ -66,6 +66,10 @@ ingredients:
     purgeExisting: false
     adminPassword: env.HOTPOT_ARGOCD_ADMIN_PASSWORD
     adminPasswordHashed: false
+
+  gitops:
+    enabled: true
+    purgeExisting: false
     projects:
       - name: hotpot
         description: Hotpot GitOps
@@ -88,3 +92,7 @@ ingredients:
             path: hub/chart
             revision: main
             namespace: hub
+            isHelm: true
+            isOci: false
+            valuesFiles:
+              - values.yaml
