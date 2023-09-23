@@ -19,7 +19,7 @@ type step struct {
 func checkPrerequisites(r *Recipe) error {
 	fmt.Printf("🍳 Checking prerequisites... \n")
 	// check if os is linux
-	for _, v := range r.Ingredients.Node.SupportedOs {
+	for _, v := range r.Node.SupportedOs {
 		if err := host.IsOS(v); err != nil {
 			return err
 		}
@@ -27,25 +27,25 @@ func checkPrerequisites(r *Recipe) error {
 	fmt.Printf(" - os: ok\n")
 
 	// check if arch is amd64
-	if err := host.IsArchIn(r.Ingredients.Node.SupportedArch); err != nil {
+	if err := host.IsArchIn(r.Node.SupportedArch); err != nil {
 		return err
 	}
 	fmt.Printf(" - arch: ok\n")
 
 	// check if ram is enough
-	if err := host.IsRAMEnough(r.Ingredients.Node.MinMemory); err != nil {
+	if err := host.IsRAMEnough(r.Node.MinMemory); err != nil {
 		return err
 	}
 	fmt.Printf(" - ram: ok\n")
 
 	// check if cpu is enough
-	if err := host.IsCPUEnough(r.Ingredients.Node.MinCpu); err != nil {
+	if err := host.IsCPUEnough(r.Node.MinCpu); err != nil {
 		return err
 	}
 	fmt.Printf(" - cpu: ok\n")
 
 	// check if disk is enough, check all disks
-	for _, v := range r.Ingredients.Node.MinDiskSize {
+	for _, v := range r.Node.MinDiskSize {
 		if err := host.IsDiskSpaceEnough(v.Path, v.Size); err != nil {
 			return err
 		}
@@ -53,7 +53,7 @@ func checkPrerequisites(r *Recipe) error {
 	fmt.Printf(" - disk: ok\n")
 
 	// check if curl ok for list of url (curl <url>)
-	if err := host.IsCurlOK(r.Ingredients.Node.Curl); err != nil {
+	if err := host.IsCurlOK(r.Node.Curl); err != nil {
 		return err
 	}
 	fmt.Printf(" - curl: ok\n")
@@ -63,7 +63,7 @@ func checkPrerequisites(r *Recipe) error {
 
 func installK3s(r *Recipe) error {
 	fmt.Printf("🍕 Adding k3s... \n")
-	k3sCfg := r.Ingredients.K3s
+	k3sCfg := r.K3s
 	if k3sCfg.PurgeExisting {
 		fmt.Printf("purging existing k3s cluster... \n")
 		err := k3s.Uninstall(r.Debug)
@@ -129,8 +129,8 @@ func installCertManager(_ *Recipe) error {
 }
 
 func installTraefik(r *Recipe) error {
-	fmt.Printf("🌶️  Adding traefik... \n")
-	traefikCfg := r.Ingredients.Traefik
+	fmt.Printf("🍔 Adding traefik... \n")
+	traefikCfg := r.Traefik
 	if traefikCfg.PurgeExisting {
 		err := traefik.Uninstall(r.Kubeconfig, r.Debug)
 		if err != nil && !strings.Contains(err.Error(), "not found") {
@@ -139,7 +139,7 @@ func installTraefik(r *Recipe) error {
 	}
 
 	var ingressProvider string
-	if r.Ingredients.CertManager.Enabled {
+	if r.CertManager.Enabled {
 		ingressProvider = CertResolver
 	}
 
@@ -170,7 +170,7 @@ func installTraefik(r *Recipe) error {
 
 func installArgocd(r *Recipe) error {
 	fmt.Printf("🥪 Adding argocd... \n")
-	if r.Ingredients.ArgoCD.PurgeExisting {
+	if r.ArgoCD.PurgeExisting {
 		err := argocd.Uninstall(r.Kubeconfig, r.Debug)
 		if err != nil && !strings.Contains(err.Error(), "not found") {
 			return err
@@ -185,8 +185,8 @@ func installArgocd(r *Recipe) error {
 		return err
 	}
 
-	if r.Ingredients.ArgoCD.AdminPassword != "" {
-		password, err := secret.Provide(r.Ingredients.ArgoCD.AdminPassword)
+	if r.ArgoCD.AdminPassword != "" {
+		password, err := secret.Provide(r.ArgoCD.AdminPassword)
 		if err != nil {
 			return fmt.Errorf("failed to provide argocd admin password \n %w", err)
 		}
@@ -216,13 +216,14 @@ func configureGitopsRepos(r *Recipe, repos []ArgocdRepository) error {
 		if err != nil {
 			return err
 		}
-		fmt.Printf(" - repository: %s ok\n", ar.Name)
+		fmt.Printf("    ├─ repository: %s ok\n", ar.Name)
 	}
 	return nil
 }
 
 func configureGitopsProjects(r *Recipe) error {
-	for _, project := range r.Ingredients.Gitops.Projects {
+	fmt.Printf("🌭 Adding gitops... \n")
+	for _, project := range r.Gitops.Projects {
 		p := argocd.Project{
 			Name: project.Name,
 		}
@@ -230,7 +231,7 @@ func configureGitopsProjects(r *Recipe) error {
 		if err != nil {
 			return err
 		}
-		fmt.Printf(" - project: %s\n", project.Name)
+		fmt.Printf(" - project: %s ok\n", project.Name)
 
 		if err := configureGitopsRepos(r, project.Repositories); err != nil {
 			return err
@@ -268,13 +269,13 @@ func configureGitopsApps(r *Recipe, project string, apps []App) error {
 		if err != nil {
 			return err
 		}
-		fmt.Printf(" - application: %s ok\n", app.Name)
+		fmt.Printf("    ├─ application: %s ok\n", app.Name)
 	}
 	return nil
 }
 
 func createSecrets(r *Recipe) error {
-	fmt.Printf("🍜 Adding secrets... \n")
+	fmt.Printf("🌶️  Adding secrets... \n")
 	return nil
 }
 

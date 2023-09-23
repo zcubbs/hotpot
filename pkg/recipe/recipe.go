@@ -12,10 +12,6 @@ type Recipe struct {
 	Kubeconfig string `mapstructure:"kubeconfig" json:"kubeconfig" yaml:"kubeconfig"`
 	Debug      bool   `mapstructure:"debug" json:"debug" yaml:"debug"`
 
-	Ingredients Ingredients `mapstructure:"ingredients" json:"ingredients" yaml:"ingredients"`
-}
-
-type Ingredients struct {
 	Node        Node              `mapstructure:"node" json:"node" yaml:"node"`
 	CertManager CertManagerConfig `mapstructure:"certManager" json:"certManager" yaml:"certManager"`
 	Traefik     TraefikConfig     `mapstructure:"traefik" json:"traefik" yaml:"traefik"`

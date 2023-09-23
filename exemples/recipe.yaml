@@ -1,101 +1,96 @@
 name: Hot Meal
-debug: true
+debug: false
 
-ingredients:
-  node:
-    check: true
-    ip: 127.0.0.1
-    minDiskSize:
-      - path: /
-        size: 80G
-    minMemory: 8G
-    minCpu: 4
-    supportedOs:
-      - linux
-    supportedArch:
-      - x86_64
-      - amd64
-    supportedDistros:
-      - name: ubuntu
-        version: 20.04
-    curl:
-      - https://github.com
-#    telnet: # removed as port scanning might be flagged by AV
-#      - 127.0.0.1:80
-#    ssh: # removed for now
-#      - 127.0.0.1
+node:
+  check: true
+  ip: 127.0.0.1
+  minDiskSize:
+    - path: /
+      size: 80G
+  minMemory: 8G
+  minCpu: 4
+  supportedOs:
+    - linux
+  supportedArch:
+    - x86_64
+    - amd64
+  supportedDistros:
+    - name: ubuntu
+      version: 20.04
+  curl:
+    - https://github.com
 
-  certManager:
-    enabled: false
+certManager:
+  enabled: false
 
-  k3s:
-    enabled: false
-    version: v1.21.2+k3s1
-    tlsSan:
-      - 127.0.0.1
-    dataDir: /data/k3s
-    defaultLocalStoragePath: /data/local-path-provisioner
-    purgeExisting: false
+k3s:
+  enabled: true
+  version: v1.21.2+k3s1
+  tlsSan:
+    - 127.0.0.1
+  dataDir: /data/k3s
+  defaultLocalStoragePath: /data/local-path-provisioner
+  purgeExisting: false
 
-  traefik:
-    enabled: false
-    purgeExisting: false
-    enableAccessLog: true
-    enableDashboard: true
-    forwardHeaders: true
-    forwardHeadersInsecure: true
-    proxyProtocol: true
-    proxyProtocolInsecure: true
-    dnsChallenge: true
-    dnsChallengeProvider: ovh
-    dnsChallengeResolverEmail: test@example.com
-    debug: true
+traefik:
+  enabled: true
+  purgeExisting: false
+  enableAccessLog: true
+  enableDashboard: true
+  forwardHeaders: true
+  forwardHeadersInsecure: true
+  proxyProtocol: true
+  proxyProtocolInsecure: true
+  dnsChallenge: true
+  dnsChallengeProvider: ovh
+  dnsChallengeResolverEmail: test@example.com
+  debug: true
 
-  secrets:
-    enabled: false
-    containerRegistries:
-      - name: dockerhub
-        url: HOTPOT_CONTAINER_REGISTRY_URL
-        username: env.HOTPOT_CONTAINER_REGISTRY_USERNAME
-        password: env.HOTPOT_CONTAINER_REGISTRY_PASSWORD
-        namespaces:
-          - hub
+secrets:
+  enabled: true
+  containerRegistries:
+    - name: dockerhub
+      url: HOTPOT_CONTAINER_REGISTRY_URL
+      username: env.HOTPOT_CONTAINER_REGISTRY_USERNAME
+      password: env.HOTPOT_CONTAINER_REGISTRY_PASSWORD
+      namespaces:
+        - hub
 
-  argocd:
-    enabled: false
-    purgeExisting: false
-    adminPassword: env.HOTPOT_ARGOCD_ADMIN_PASSWORD
-    adminPasswordHashed: false
+argocd:
+  enabled: true
+  purgeExisting: false
+  adminPassword: env.HOTPOT_ARGOCD_ADMIN_PASSWORD
+  adminPasswordHashed: false
 
-  gitops:
-    enabled: true
-    purgeExisting: false
-    projects:
-      - name: hotpot
-        description: Hotpot GitOps
-        repositories:
-          - name: gitops-private-repo
-            url: https://github.com/zcubbs/hotpot-gitops-test-private-repo
-            type: git
-            credentials:
-              username: env.HOTPOT_GITOPS_REPO_USERNAME
-              password: env.HOTPOT_GITOPS_REPO_PASSWORD
-          - name: helm-private-repo
-            url: https://github.com/zcubbs/hotpot-charts-test-private-repo
-            type: helm
-            credentials:
-              username: env.HOTPOT_HELM_REPO_USERNAME
-              password: env.HOTPOT_HELM_REPO_PASSWORD
-        apps:
-          - name: hub
-            repo: https://github.com/zcubbs/hotpot-gitops-test-private-repo
-            path: hub/chart
-            revision: main
-            namespace: hub
-            createNamespace: true
-            isHelm: true
-            isOci: false
-            valuesFiles:
-              - values.yaml
-            prune: true
-            selfHeal: true
+gitops:
+  enabled: true
+  purgeExisting: false
+  projects:
+    - name: hotpot
+      description: Hotpot GitOps
+      repositories:
+        - name: gitops-private-repo
+          url: https://github.com/zcubbs/hotpot-gitops-test-private-repo
+          type: git
+          credentials:
+            username: env.HOTPOT_GITOPS_REPO_USERNAME
+            password: env.HOTPOT_GITOPS_REPO_PASSWORD
+        - name: helm-private-repo
+          url: https://github.com/zcubbs/hotpot-charts-test-private-repo
+          type: helm
+          credentials:
+            username: env.HOTPOT_HELM_REPO_USERNAME
+            password: env.HOTPOT_HELM_REPO_PASSWORD
+      apps:
+        - name: hub
+          repo: https://github.com/zcubbs/hotpot-gitops-test-private-repo
+          path: hub/chart
+          revision: main
+          namespace: hub
+          createNamespace: true
+          isHelm: true
+          isOci: false
+          valuesFiles:
+            - values.yaml
+          prune: true
+          selfHeal: true

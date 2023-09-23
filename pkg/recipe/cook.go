@@ -39,13 +39,13 @@ func Cook(recipePath string, hooks ...Hooks) error {
 
 	// add steps
 	if err := add(recipe,
-		step{f: checkPrerequisites, c: recipe.Ingredients.Node.Check},
-		step{f: installK3s, c: recipe.Ingredients.K3s.Enabled},
-		step{f: createSecrets, c: recipe.Ingredients.Secrets.Enabled},
-		step{f: installCertManager, c: recipe.Ingredients.CertManager.Enabled},
-		step{f: installTraefik, c: recipe.Ingredients.Traefik.Enabled},
-		step{f: installArgocd, c: recipe.Ingredients.ArgoCD.Enabled},
-		step{f: configureGitopsProjects, c: recipe.Ingredients.Gitops.Enabled},
+		step{f: checkPrerequisites, c: recipe.Node.Check},
+		step{f: installK3s, c: recipe.K3s.Enabled},
+		step{f: createSecrets, c: recipe.Secrets.Enabled},
+		step{f: installCertManager, c: recipe.CertManager.Enabled},
+		step{f: installTraefik, c: recipe.Traefik.Enabled},
+		step{f: installArgocd, c: recipe.ArgoCD.Enabled},
+		step{f: configureGitopsProjects, c: recipe.Gitops.Enabled},
 		step{f: printKubeconfig, c: recipe.Debug},
 	); err != nil {
 		return err
