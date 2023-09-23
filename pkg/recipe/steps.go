@@ -7,7 +7,7 @@ import (
 	"github.com/zcubbs/hotpot/pkg/traefik"
 	"github.com/zcubbs/x/helm"
 	"github.com/zcubbs/x/k3s"
-	"os"
+	"github.com/zcubbs/x/secret"
 	"strings"
 )
 
@@ -93,6 +93,7 @@ func installK3s(r *Recipe) error {
 func ensureTraefikIsDisabled(options []string) []string {
 	var found bool
 	var updatedOptions []string
+	updatedOptions = options
 	for _, v := range options {
 		if v == "traefik" {
 			found = true
@@ -100,7 +101,7 @@ func ensureTraefikIsDisabled(options []string) []string {
 		}
 	}
 	if !found {
-		updatedOptions = append(options, "traefik")
+		updatedOptions = append(updatedOptions, "traefik")
 	}
 	return updatedOptions
 }
@@ -185,14 +186,9 @@ func installArgocd(r *Recipe) error {
 	}
 
 	if r.Ingredients.ArgoCD.AdminPassword != "" {
-		var password string
-		if strings.Contains(r.Ingredients.ArgoCD.AdminPassword, "env.") {
-			password = os.Getenv(strings.ReplaceAll(r.Ingredients.ArgoCD.AdminPassword, "env.", ""))
-			if password == "" {
-				return fmt.Errorf("failed to get argocd admin password from env")
-			}
-		} else {
-			password = r.Ingredients.ArgoCD.AdminPassword
+		password, err := secret.Provide(r.Ingredients.ArgoCD.AdminPassword)
+		if err != nil {
+			return fmt.Errorf("failed to provide argocd admin password \n %w", err)
 		}
 
 		v.AdminPassword = password
@@ -200,6 +196,7 @@ func installArgocd(r *Recipe) error {
 		if err != nil {
 			return fmt.Errorf("failed to patch argocd admin password \n %w", err)
 		}
+
 		fmt.Printf(" - argocd admin password: ok\n")
 	}
 
@@ -208,13 +205,6 @@ func installArgocd(r *Recipe) error {
 
 func configureGitopsRepos(r *Recipe, repos []ArgocdRepository) error {
 	for _, ar := range repos {
-		creds := &ar.Credentials
-		if strings.Contains(creds.Username, "env.") {
-			creds.Username = os.Getenv(strings.ReplaceAll(creds.Username, "env.", ""))
-		}
-		if strings.Contains(creds.Password, "env.") {
-			creds.Password = os.Getenv(creds.Password)
-		}
 		repo := argocd.Repository{
 			Name:     ar.Name,
 			Url:      ar.Url,

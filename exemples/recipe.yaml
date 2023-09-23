@@ -75,20 +75,20 @@ ingredients:
         description: Hotpot GitOps
         repositories:
           - name: gitops-private-repo
-            url: https://github.com/zcubbs/hotpot-gitops-test-private-repo.git
+            url: https://github.com/zcubbs/hotpot-gitops-test-private-repo
             type: git
             credentials:
               username: env.HOTPOT_GITOPS_REPO_USERNAME
               password: env.HOTPOT_GITOPS_REPO_PASSWORD
           - name: helm-private-repo
-            url: https://github.com/zcubbs/hotpot-charts-test-private-repo.git
+            url: https://github.com/zcubbs/hotpot-charts-test-private-repo
             type: helm
             credentials:
               username: env.HOTPOT_HELM_REPO_USERNAME
               password: env.HOTPOT_HELM_REPO_PASSWORD
         apps:
           - name: hub
-            repo: https://github.com/zcubbs/hotpot-gitops-test-private-repo.git
+            repo: https://github.com/zcubbs/hotpot-gitops-test-private-repo
             path: hub/chart
             revision: main
             namespace: hub
@@ -97,3 +97,5 @@ ingredients:
             isOci: false
             valuesFiles:
               - values.yaml
+            prune: true
+            selfHeal: true

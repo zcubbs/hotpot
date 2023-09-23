@@ -89,7 +89,22 @@ type Values struct {
 	AdminPassword string
 }
 
+const patchPasswordAnnotation = "patched-password"
+
 func PatchPassword(values Values, kubeconfig string, debug bool) error {
+	secret, err := kubernetes.GetSecret(kubeconfig, argocdNamespace, "argocd-secret")
+	if err != nil {
+		return fmt.Errorf("failed to get argocd-secret: %w", err)
+	}
+
+	if _, ok := secret.Annotations[patchPasswordAnnotation]; ok {
+		if debug {
+			fmt.Println("argocd-secret already patched")
+		}
+
+		return nil
+	}
+
 	hashedPassword, err := hashPassword(values.AdminPassword)
 	if err != nil {
 		return fmt.Errorf("failed to hash password: %w", err)
@@ -101,6 +116,9 @@ func PatchPassword(values Values, kubeconfig string, debug bool) error {
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "argocd-secret",
 				Namespace: argocdNamespace,
+				Annotations: map[string]string{
+					patchPasswordAnnotation: "true",
+				},
 			},
 			StringData: map[string]string{
 				"admin.password":      hashedPassword,
@@ -113,6 +131,36 @@ func PatchPassword(values Values, kubeconfig string, debug bool) error {
 	)
 	if err != nil {
 		return fmt.Errorf("failed to create argocd-secret: %w", err)
+	}
+
+	err = kubernetes.RestartPods(kubeconfig, argocdNamespace,
+		[]string{
+			argocdServerDeploymentName,
+			argocdDexServerDeploymentName,
+			argocdRepoServerDeploymentName,
+			argocdRedisDeploymentName,
+			argocdApplicationsetControllerDeploymentName,
+			argocdNotificationsControllerDeploymentName,
+		},
+		debug)
+	if err != nil {
+		return fmt.Errorf("failed to restart argocd server pod: %w", err)
+	}
+
+	// wait for argocd server to be ready
+	ctxWithTimeout, cancel := context.WithTimeout(context.Background(), 3*time.Minute)
+	defer cancel()
+	err = kubernetes.IsDeploymentReady(
+		ctxWithTimeout,
+		kubeconfig,
+		argocdNamespace,
+		[]string{
+			argocdServerDeploymentName,
+		},
+		debug,
+	)
+	if err != nil {
+		return fmt.Errorf("failed to wait for argocd server to be ready \n %w", err)
 	}
 
 	return nil

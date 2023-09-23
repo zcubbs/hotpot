@@ -3,6 +3,7 @@ package argocd
 import (
 	"fmt"
 	"github.com/zcubbs/x/kubernetes"
+	"github.com/zcubbs/x/secret"
 	"strings"
 )
 
@@ -32,11 +33,18 @@ func CreateRepository(repo Repository, _ string, debug bool) error {
 	if repo.Type == Git {
 		urlValid = strings.HasSuffix(repo.Url, ".git")
 		if !urlValid {
-			return fmt.Errorf("error: url must be valid git url: %s. %s",
-				repo.Url,
-				"example: https://example.com/example.git",
-			)
+			repo.Url = repo.Url + ".git"
 		}
+	}
+
+	username, err := secret.Provide(repo.Username)
+	if err != nil {
+		return fmt.Errorf("failed to provide argocd repository username \n %w", err)
+	}
+
+	password, err := secret.Provide(repo.Password)
+	if err != nil {
+		return fmt.Errorf("failed to provide argocd repository password \n %w", err)
 	}
 
 	tmpValues := repoTmplValues{
@@ -44,11 +52,11 @@ func CreateRepository(repo Repository, _ string, debug bool) error {
 		Namespace: argocdNamespace,
 		Type:      repo.Type,
 		Url:       repo.Url,
-		Username:  repo.Username,
-		Password:  repo.Password,
+		Username:  username,
+		Password:  password,
 	}
 
-	err := kubernetes.ApplyManifest(repoTmpl, tmpValues, debug)
+	err = kubernetes.ApplyManifest(repoTmpl, tmpValues, debug)
 	if err != nil {
 		return err
 	}
@@ -76,8 +84,8 @@ metadata:
     argocd.argoproj.io/secret-type: repository
 stringData:
   type: {{ .Type }}
-{{- if eq .Type "helm" }}
   name: {{ .Name }}
+{{- if eq .Type "helm" }}
   enableOCI: "true"
 {{- end }}
   url: {{ .Url }}

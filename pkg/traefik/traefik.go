@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/zcubbs/x/helm"
 	"github.com/zcubbs/x/kubernetes"
-	"github.com/zcubbs/x/templates"
+	"github.com/zcubbs/x/yaml"
 	"os"
 	"time"
 )
@@ -39,7 +39,7 @@ func Install(values Values, kubeconfig string, debug bool) error {
 	valuesPath := getTmpValuesFilePath()
 
 	// create traefik values.yaml from template
-	configFileContent, err := templates.ApplyTmpl(traefikValuesTmpl, values, debug)
+	configFileContent, err := yaml.ApplyTmpl(traefikValuesTmpl, values, debug)
 	if err != nil {
 		return fmt.Errorf("failed to apply template \n %w", err)
 	}

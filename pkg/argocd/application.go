@@ -3,6 +3,7 @@ package argocd
 import (
 	"fmt"
 	"github.com/zcubbs/x/kubernetes"
+	"github.com/zcubbs/x/pretty"
 )
 
 type Application struct {
@@ -28,8 +29,12 @@ type Application struct {
 }
 
 func CreateApplication(app Application, _ string, debug bool) error {
-	if err := validateApp(app); err != nil {
+	if err := validateApp(&app); err != nil {
 		return err
+	}
+
+	if debug {
+		pretty.PrintJson(app)
 	}
 
 	// create app
@@ -45,7 +50,7 @@ func CreateApplication(app Application, _ string, debug bool) error {
 	return kubernetes.ApplyManifest(argoAppTmpl, app, debug)
 }
 
-func validateApp(app Application) error {
+func validateApp(app *Application) error {
 	if !app.IsHelm && app.IsOCI {
 		return fmt.Errorf("oci flag can only be used with helm charts. helm is false")
 	}
@@ -60,6 +65,10 @@ func validateApp(app Application) error {
 
 	if app.ArgoNamespace == "" {
 		app.ArgoNamespace = argocdNamespace
+	}
+
+	if app.Namespace == "" {
+		return fmt.Errorf("namespace cannot be empty")
 	}
 
 	return nil
