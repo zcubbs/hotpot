@@ -9,8 +9,8 @@ type Hooks struct {
 	Pre  PreHook
 	Post PostHook
 }
-type PreHook func() error
-type PostHook func() error
+type PreHook func(r *Recipe) error
+type PostHook func(r *Recipe) error
 
 // Cook runs recipe
 func Cook(recipePath string, hooks ...Hooks) error {
@@ -32,7 +32,7 @@ func Cook(recipePath string, hooks ...Hooks) error {
 
 	// preheat hooks
 	for _, hook := range hooks {
-		if err := hook.Pre(); err != nil {
+		if err := hook.Pre(recipe); err != nil {
 			return err
 		}
 	}
@@ -53,7 +53,7 @@ func Cook(recipePath string, hooks ...Hooks) error {
 
 	// post cook hooks
 	for _, hook := range hooks {
-		if err := hook.Post(); err != nil {
+		if err := hook.Post(recipe); err != nil {
 			return err
 		}
 	}

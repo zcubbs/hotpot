@@ -19,20 +19,22 @@ var Cmd = &cobra.Command{
 	Short: "cook commands",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		must.Succeed(progress.RunTask(cook(), true))
+		verbose := cmd.Flag("verbose").Value.String() == "true"
+		must.Succeed(progress.RunTask(cook(verbose), true))
 	},
 }
 
-func cook() func() error {
+func cook(verbose bool) func() error {
 	return func() error {
 		return recipe.Cook(recipePath,
 			recipe.Hooks{
-				Pre: func() error {
+				Pre: func(r *recipe.Recipe) error {
 					style := lipgloss.NewStyle().Bold(true)
+					r.Debug = verbose
 					fmt.Println(style.Render("🍲 Cooking..."))
 					return nil
 				},
-				Post: func() error {
+				Post: func(r *recipe.Recipe) error {
 					return nil
 				},
 			},

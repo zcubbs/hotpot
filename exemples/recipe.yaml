@@ -1,5 +1,4 @@
-name: Hot Meal
-debug: false
+---
 
 node:
   check: true
