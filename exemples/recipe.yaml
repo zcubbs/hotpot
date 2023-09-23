@@ -52,7 +52,7 @@ ingredients:
     debug: true
 
   secrets:
-    enabled: true
+    enabled: false
     containerRegistries:
       - name: dockerhub
         url: HOTPOT_CONTAINER_REGISTRY_URL
@@ -62,7 +62,7 @@ ingredients:
           - hub
 
   argocd:
-    enabled: true
+    enabled: false
     purgeExisting: false
     adminPassword: env.HOTPOT_ARGOCD_ADMIN_PASSWORD
     adminPasswordHashed: false
@@ -92,6 +92,7 @@ ingredients:
             path: hub/chart
             revision: main
             namespace: hub
+            createNamespace: true
             isHelm: true
             isOci: false
             valuesFiles:
