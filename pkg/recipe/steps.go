@@ -2,11 +2,11 @@ package recipe
 
 import (
 	"fmt"
-	"github.com/zcubbs/hotpot/pkg/argocd"
-	"github.com/zcubbs/hotpot/pkg/host"
-	"github.com/zcubbs/hotpot/pkg/traefik"
-	"github.com/zcubbs/x/helm"
-	"github.com/zcubbs/x/k3s"
+	"github.com/zcubbs/go-k8s/argocd"
+	"github.com/zcubbs/go-k8s/helm"
+	"github.com/zcubbs/go-k8s/k3s"
+	"github.com/zcubbs/go-k8s/traefik"
+	"github.com/zcubbs/x/host"
 	"github.com/zcubbs/x/secret"
 	"strings"
 )

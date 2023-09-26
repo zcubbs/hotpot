@@ -6,10 +6,8 @@ require (
 	github.com/charmbracelet/lipgloss v0.8.0
 	github.com/spf13/cobra v1.7.0
 	github.com/spf13/viper v1.16.0
-	github.com/zcubbs/x v0.1.7
-	golang.org/x/crypto v0.13.0
-	k8s.io/api v0.28.2
-	k8s.io/apimachinery v0.28.2
+	github.com/zcubbs/go-k8s v0.1.0
+	github.com/zcubbs/x v0.1.8
 )
 
 require (
@@ -130,6 +128,7 @@ require (
 	go.opentelemetry.io/otel/metric v1.18.0 // indirect
 	go.opentelemetry.io/otel/trace v1.18.0 // indirect
 	go.starlark.net v0.0.0-20230921161717-a9587466d7a5 // indirect
+	golang.org/x/crypto v0.13.0 // indirect
 	golang.org/x/net v0.15.0 // indirect
 	golang.org/x/oauth2 v0.12.0 // indirect
 	golang.org/x/sync v0.3.0 // indirect
@@ -146,7 +145,9 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	helm.sh/helm/v3 v3.12.3 // indirect
+	k8s.io/api v0.28.2 // indirect
 	k8s.io/apiextensions-apiserver v0.28.2 // indirect
+	k8s.io/apimachinery v0.28.2 // indirect
 	k8s.io/apiserver v0.28.2 // indirect
 	k8s.io/cli-runtime v0.28.2 // indirect
 	k8s.io/client-go v0.28.2 // indirect
