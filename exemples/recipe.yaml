@@ -27,6 +27,7 @@ k3s:
   version: v1.21.2+k3s1
   tlsSan:
     - 127.0.0.1
+#  forwardDns: "8.8.8.8"
   dataDir: /data/k3s
   defaultLocalStoragePath: /data/local-path-provisioner
   purgeExisting: false
@@ -43,6 +44,10 @@ traefik:
   dnsChallenge: true
   dnsChallengeProvider: ovh
   dnsChallengeResolverEmail: test@example.com
+#  dnsChallengeResolverIPs: "1.1.1.1:53,8.8.8.8:53"
+#  defaultCertificateEnabled: true
+#  defaultCertificateCert: env.HOTPOT_DEFAULT_CERTIFICATE_CERT
+#  defaultCertificateKey: env.HOTPOT_DEFAULT_CERTIFICATE_KEY
   debug: true
 
 secrets:

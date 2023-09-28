@@ -55,6 +55,7 @@ type K3sConfig struct {
 	DataDir                 string   `mapstructure:"dataDir" json:"dataDir" yaml:"dataDir"`
 	DefaultLocalStoragePath string   `mapstructure:"defaultLocalStoragePath" json:"defaultLocalStoragePath" yaml:"defaultLocalStoragePath"`
 	WriteKubeconfigMode     string   `mapstructure:"writeKubeconfigMode" json:"writeKubeconfigMode" yaml:"writeKubeconfigMode"`
+	ForwardDns              string   `mapstructure:"forwardDns" json:"forwardDns" yaml:"forwardDns"`
 	IsHA                    bool     `mapstructure:"isHA" json:"isHA" yaml:"isHA"`
 	IsServer                bool     `mapstructure:"isServer" json:"isServer" yaml:"isServer"`
 	ClusterToken            string   `mapstructure:"clusterToken" json:"clusterToken" yaml:"clusterToken"`
@@ -79,11 +80,17 @@ type TraefikConfig struct {
 	DnsChallenge              bool   `mapstructure:"dnsChallenge" json:"dnsChallenge" yaml:"dnsChallenge"`
 	DnsChallengeProvider      string `mapstructure:"dnsChallengeProvider" json:"dnsChallengeProvider" yaml:"dnsChallengeProvider"`
 	DnsChallengeDelay         int    `mapstructure:"dnsChallengeDelay" json:"dnsChallengeDelay" yaml:"dnsChallengeDelay"`
+	DnsChallengeResolverIPs   string `mapstructure:"dnsChallengeResolverIPs" json:"dnsChallengeResolverIPs" yaml:"dnsChallengeResolverIPs"`
 	DnsChallengeResolverEmail string `mapstructure:"dnsChallengeResolverEmail" json:"dnsChallengeResolverEmail" yaml:"dnsChallengeResolverEmail"`
 	DnsChallengeTZ            string `mapstructure:"dnsChallengeTZ" json:"dnsChallengeTZ" yaml:"dnsChallengeTZ"`
 	TransportInsecure         bool   `mapstructure:"transportInsecure" json:"transportInsecure" yaml:"transportInsecure"`
-	Debug                     bool   `mapstructure:"debug" json:"debug" yaml:"debug"`
-	PurgeExisting             bool   `mapstructure:"purgeExisting" json:"purgeExisting" yaml:"purgeExisting"`
+
+	DefaultCertificateEnabled bool   `mapstructure:"defaultCertificateEnabled" json:"defaultCertificateEnabled" yaml:"defaultCertificateEnabled"`
+	DefaultCertificateCert    string `mapstructure:"defaultCertificateCert" json:"defaultCertificateCert" yaml:"defaultCertificateCert"`
+	DefaultCertificateKey     string `mapstructure:"defaultCertificateKey" json:"defaultCertificateKey" yaml:"defaultCertificateKey"`
+
+	Debug         bool `mapstructure:"debug" json:"debug" yaml:"debug"`
+	PurgeExisting bool `mapstructure:"purgeExisting" json:"purgeExisting" yaml:"purgeExisting"`
 }
 
 type ArgoCDConfig struct {
