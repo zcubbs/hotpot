@@ -35,6 +35,8 @@ type Node struct {
 	SupportedArch    []string `mapstructure:"supportedArch" json:"supportedArch" yaml:"supportedArch"`
 	SupportedDistros []Distro `mapstructure:"supportedDistros" json:"supportedDistros" yaml:"supportedDistros"`
 	Curl             []string `mapstructure:"curl" json:"curl" yaml:"curl"`
+	Nmap             []string `mapstructure:"nmap" json:"nmap" yaml:"nmap"`
+	Telnet           []string `mapstructure:"telnet" json:"telnet" yaml:"telnet"`
 }
 
 type Disk struct {
@@ -58,6 +60,7 @@ type K3sConfig struct {
 	ForwardDns              string   `mapstructure:"forwardDns" json:"forwardDns" yaml:"forwardDns"`
 	IsHA                    bool     `mapstructure:"isHA" json:"isHA" yaml:"isHA"`
 	IsServer                bool     `mapstructure:"isServer" json:"isServer" yaml:"isServer"`
+	KubeApiAddress          string   `mapstructure:"kubeApiAddress" json:"kubeApiAddress" yaml:"kubeApiAddress"`
 	ClusterToken            string   `mapstructure:"clusterToken" json:"clusterToken" yaml:"clusterToken"`
 	HttpsListenPort         string   `mapstructure:"httpsListenPort" json:"httpsListenPort" yaml:"httpsListenPort"`
 	ExtraArgs               []string `mapstructure:"extraArgs" json:"extraArgs" yaml:"extraArgs"`
@@ -134,6 +137,7 @@ type ArgocdRepository struct {
 	Name        string                      `mapstructure:"name" json:"name" yaml:"name"`
 	Url         string                      `mapstructure:"url" json:"url" yaml:"url"`
 	Type        ArgocdRepositoryType        `mapstructure:"type" json:"type" yaml:"type"`
+	IsOci       bool                        `mapstructure:"isOci" json:"isOci" yaml:"isOci"`
 	Credentials ArgocdRepositoryCredentials `mapstructure:"credentials" json:"credentials" yaml:"credentials"`
 }
 
@@ -150,6 +154,7 @@ type SecretsConfig struct {
 }
 
 type ContainerRegistryCredentials struct {
+	Name       string   `mapstructure:"name" json:"name" yaml:"name"`
 	Username   string   `mapstructure:"username" json:"username" yaml:"username"`
 	Password   string   `mapstructure:"password" json:"password" yaml:"password"`
 	Url        string   `mapstructure:"url" json:"url" yaml:"url"`

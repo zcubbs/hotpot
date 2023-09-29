@@ -25,6 +25,7 @@ certManager:
 k3s:
   enabled: true
   version: v1.21.2+k3s1
+  kubeApiAddress: https://127.0.0.1:6443
   tlsSan:
     - 127.0.0.1
 #  forwardDns: "8.8.8.8"
@@ -82,6 +83,7 @@ gitops:
         - name: helm-private-repo
           url: https://github.com/zcubbs/hotpot-charts-test-private-repo
           type: helm
+          isOci: true
           credentials:
             username: env.HOTPOT_HELM_REPO_USERNAME
             password: env.HOTPOT_HELM_REPO_PASSWORD

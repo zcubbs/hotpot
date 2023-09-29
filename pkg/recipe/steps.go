@@ -1,10 +1,12 @@
 package recipe
 
 import (
+	"context"
 	"fmt"
 	"github.com/zcubbs/go-k8s/argocd"
 	"github.com/zcubbs/go-k8s/helm"
 	"github.com/zcubbs/go-k8s/k3s"
+	"github.com/zcubbs/go-k8s/kubernetes"
 	"github.com/zcubbs/go-k8s/traefik"
 	"github.com/zcubbs/x/host"
 	"github.com/zcubbs/x/secret"
@@ -65,11 +67,13 @@ func installK3s(r *Recipe) error {
 	fmt.Printf("🍕 Adding k3s... \n")
 	k3sCfg := r.K3s
 	if k3sCfg.PurgeExisting {
-		fmt.Printf("purging existing k3s cluster... \n")
+		fmt.Printf(" ├─ uninstalling k3s... ")
 		err := k3s.Uninstall(r.Debug)
 		if err != nil && !strings.Contains(err.Error(), "no such file or directory") { // ignore if k3s is not installed
 			return err
 		}
+
+		fmt.Printf("ok\n")
 	}
 	disableOpts := ensureTraefikIsDisabled(k3sCfg.Disable)
 	if r.Debug {
@@ -87,6 +91,8 @@ func installK3s(r *Recipe) error {
 	if err != nil {
 		return err
 	}
+
+	fmt.Printf(" └─ install ok\n")
 
 	return installHelm(r)
 }
@@ -216,12 +222,13 @@ func configureGitopsRepos(r *Recipe, repos []ArgocdRepository) error {
 			Username: ar.Credentials.Username,
 			Password: ar.Credentials.Password,
 			Type:     string(ar.Type),
+			IsOci:    ar.IsOci,
 		}
 		err := argocd.CreateRepository(repo, r.Kubeconfig, r.Debug)
 		if err != nil {
-			return err
+			return fmt.Errorf("failed to create argocd repository %s \n %w", ar.Name, err)
 		}
-		fmt.Printf("    ├─ repository: %s ok\n", ar.Name)
+		fmt.Printf("    │  ├─ repository: %s ok\n", ar.Name)
 	}
 	return nil
 }
@@ -236,7 +243,7 @@ func configureGitopsProjects(r *Recipe) error {
 		if err != nil {
 			return err
 		}
-		fmt.Printf(" - project: %s ok\n", project.Name)
+		fmt.Printf("    ├─ project: %s ok\n", project.Name)
 
 		if err := configureGitopsRepos(r, project.Repositories); err != nil {
 			return err
@@ -246,6 +253,9 @@ func configureGitopsProjects(r *Recipe) error {
 			return err
 		}
 	}
+
+	fmt.Printf("    └─ gitops ok\n")
+
 	return nil
 }
 
@@ -274,16 +284,61 @@ func configureGitopsApps(r *Recipe, project string, apps []App) error {
 		if err != nil {
 			return err
 		}
-		fmt.Printf("    ├─ application: %s ok\n", app.Name)
+		fmt.Printf("    │  ├─ application: %s ok\n", app.Name)
 	}
 	return nil
 }
 
 func createSecrets(r *Recipe) error {
 	fmt.Printf("🌶️  Adding secrets... \n")
+
+	for _, crs := range r.Secrets.ContainerRegistries {
+		fmt.Printf("    ├─ container registry credentials: %s \n", crs.Name)
+
+		err := kubernetes.CreateNamespace(r.Kubeconfig, crs.Namespaces)
+		if err != nil {
+			return fmt.Errorf("failed to create namespace: %s %w", crs.Namespaces, err)
+		}
+
+		fmt.Printf("    │  ├─ namespaces: %s ok\n", crs.Namespaces)
+
+		username, err := secret.Provide(crs.Username)
+		if err != nil {
+			return fmt.Errorf("failed to provide container registry username: %w", err)
+		}
+
+		password, err := secret.Provide(crs.Password)
+		if err != nil {
+			return fmt.Errorf("failed to provide container registry password: %w", err)
+		}
+
+		err = kubernetes.CreateContainerRegistrySecret(
+			context.Background(),
+			r.Kubeconfig,
+			kubernetes.ContainerRegistrySecret{
+				Name:     crs.Name,
+				Server:   crs.Url,
+				Username: username,
+				Password: password,
+			},
+			crs.Namespaces,
+			true,
+			r.Debug,
+		)
+		if err != nil {
+			return fmt.Errorf("failed to create container registry secret: %s %w", crs.Name, err)
+		}
+
+		fmt.Printf("    │  └─ secret ok\n")
+	}
 	return nil
 }
 
 func printKubeconfig(r *Recipe) error {
+	fmt.Printf("🍣  Printing kubeconfig... \n")
+	err := k3s.PrintKubeconfig(r.Kubeconfig, r.K3s.KubeApiAddress)
+	if err != nil {
+		return fmt.Errorf("failed to print kubeconfig \n %w", err)
+	}
 	return nil
 }

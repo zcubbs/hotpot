@@ -531,9 +531,8 @@ github.com/yvasiyarov/gorelic v0.0.0-20141212073537-a9bba5b9ab50 h1:hlE8//ciYMzt
 github.com/yvasiyarov/gorelic v0.0.0-20141212073537-a9bba5b9ab50/go.mod h1:NUSPSUX/bi6SeDMUh6brw0nXpxHnc96TguQh0+r/ssA=
 github.com/yvasiyarov/newrelic_platform_go v0.0.0-20140908184405-b21fdbd4370f h1:ERexzlUfuTvpE74urLSbIQW0Z/6hF9t8U4NsJLaioAY=
 github.com/yvasiyarov/newrelic_platform_go v0.0.0-20140908184405-b21fdbd4370f/go.mod h1:GlGEuHIJweS1mbCqG+7vt2nvWLzLLnRHbXz5JKd/Qbg=
-github.com/zcubbs/go-k8s v0.1.0 h1:+vdgDGQe97aXLP2lUU6N3QIOwYLak5hdSbDmmNa8lLw=
-github.com/zcubbs/go-k8s v0.1.0/go.mod h1:oYXK3g3qU1/CfIYaFvH8pVyPRS6QW5cqXK7xhkgEElw=
-github.com/zcubbs/go-k8s v0.3.0/go.mod h1:oYXK3g3qU1/CfIYaFvH8pVyPRS6QW5cqXK7xhkgEElw=
+github.com/zcubbs/go-k8s v0.4.0 h1:jwUuKtpUsyf42ZFkIbaQE/kqfeHQ5S7XBvR+NOX77os=
+github.com/zcubbs/go-k8s v0.4.0/go.mod h1:oYXK3g3qU1/CfIYaFvH8pVyPRS6QW5cqXK7xhkgEElw=
 github.com/zcubbs/x v0.1.8 h1:YBL6merBjrLFU4gvjzd2nZbbgv1f4nEc3ZqMOfy0tG4=
 github.com/zcubbs/x v0.1.8/go.mod h1:rtTgdac8obcdDxNDEpeUvlx0gdiYEvOlAZXt1ZbO6jA=
 go.opencensus.io v0.21.0/go.mod h1:mSImk1erAIZhrmZN+AvHh14ztQfjbGwt4TtuofqLduU=
