@@ -21,10 +21,6 @@ type Recipe struct {
 	Gitops      GitopsConfig      `mapstructure:"gitops" json:"gitops" yaml:"gitops"`
 }
 
-type CertManagerConfig struct {
-	Enabled bool `mapstructure:"enabled" json:"enabled" yaml:"enabled"`
-}
-
 type Node struct {
 	Check            bool     `mapstructure:"check" json:"check" yaml:"check"`
 	Ip               string   `mapstructure:"ip" json:"ip" yaml:"ip"`
@@ -67,6 +63,15 @@ type K3sConfig struct {
 	PurgeExisting           bool     `mapstructure:"purgeExisting" json:"purgeExisting" yaml:"purgeExisting"`
 }
 
+type CertManagerConfig struct {
+	Enabled                         bool   `mapstructure:"enabled" json:"enabled" yaml:"enabled"`
+	Version                         string `mapstructure:"version" json:"version" yaml:"version"`
+	LetsencryptIssuerEnabled        bool   `mapstructure:"letsencryptIssuerEnabled" json:"letsencryptIssuerEnabled" yaml:"letsencryptIssuerEnabled"`
+	LetsencryptIssuerEmail          string `mapstructure:"letsencryptIssuerEmail" json:"letsencryptIssuerEmail" yaml:"letsencryptIssuerEmail"`
+	LetsEncryptIngressClassResolver string `mapstructure:"letsEncryptIngressClassResolver" json:"letsEncryptIngressClassResolver" yaml:"letsEncryptIngressClassResolver"`
+	PurgeExisting                   bool   `mapstructure:"purgeExisting" json:"purgeExisting" yaml:"purgeExisting"`
+}
+
 type TraefikConfig struct {
 	Enabled                   bool   `mapstructure:"enabled" json:"enabled" yaml:"enabled"`
 	EndpointsWeb              string `mapstructure:"endpointsWeb" json:"endpointsWeb" yaml:"endpointsWeb"`
@@ -87,6 +92,7 @@ type TraefikConfig struct {
 	DnsChallengeResolverEmail string `mapstructure:"dnsChallengeResolverEmail" json:"dnsChallengeResolverEmail" yaml:"dnsChallengeResolverEmail"`
 	DnsChallengeTZ            string `mapstructure:"dnsChallengeTZ" json:"dnsChallengeTZ" yaml:"dnsChallengeTZ"`
 	TransportInsecure         bool   `mapstructure:"transportInsecure" json:"transportInsecure" yaml:"transportInsecure"`
+	IngressProvider           string `mapstructure:"ingressProvider" json:"ingressProvider" yaml:"ingressProvider"`
 
 	DefaultCertificateEnabled bool   `mapstructure:"defaultCertificateEnabled" json:"defaultCertificateEnabled" yaml:"defaultCertificateEnabled"`
 	DefaultCertificateCert    string `mapstructure:"defaultCertificateCert" json:"defaultCertificateCert" yaml:"defaultCertificateCert"`

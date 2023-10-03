@@ -19,9 +19,6 @@ node:
   curl:
     - https://github.com
 
-certManager:
-  enabled: false
-
 k3s:
   enabled: true
   version: v1.21.2+k3s1
@@ -33,6 +30,13 @@ k3s:
   defaultLocalStoragePath: /data/local-path-provisioner
   purgeExisting: false
 
+certManager:
+  enabled: true
+  purgeExisting: false
+  letsencryptIssuerEnabled: true
+  letsencryptIssuerEmail: test@example.com
+  letsEncryptIngressClassResolver: traefik
+
 traefik:
   enabled: true
   purgeExisting: false
@@ -42,7 +46,8 @@ traefik:
   forwardHeadersInsecure: true
   proxyProtocol: true
   proxyProtocolInsecure: true
-  dnsChallenge: true
+  ingressProvider: traefik
+  dnsChallenge: false
   dnsChallengeProvider: ovh
   dnsChallengeResolverEmail: test@example.com
 #  dnsChallengeResolverIPs: "1.1.1.1:53,8.8.8.8:53"

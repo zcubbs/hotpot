@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/zcubbs/go-k8s/argocd"
+	"github.com/zcubbs/go-k8s/certmanager"
 	"github.com/zcubbs/go-k8s/helm"
 	"github.com/zcubbs/go-k8s/k3s"
 	"github.com/zcubbs/go-k8s/kubernetes"
@@ -130,9 +131,26 @@ func installHelm(cfg *Recipe) error {
 	return nil
 }
 
-func installCertManager(_ *Recipe) error {
+func installCertManager(r *Recipe) error {
 	fmt.Printf("🍙 Adding cert-manager... \n")
-	return nil
+	certmanagerCfg := r.CertManager
+	if certmanagerCfg.PurgeExisting {
+		err := certmanager.Uninstall(r.Kubeconfig, r.Debug)
+		if err != nil && !strings.Contains(err.Error(), "not found") {
+			return err
+		}
+	}
+
+	return certmanager.Install(
+		certmanager.Values{
+			Version:                         certmanagerCfg.Version,
+			LetsencryptIssuerEnabled:        certmanagerCfg.LetsencryptIssuerEnabled,
+			LetsencryptIssuerEmail:          certmanagerCfg.LetsencryptIssuerEmail,
+			LetsEncryptIngressClassResolver: certmanagerCfg.LetsEncryptIngressClassResolver,
+		},
+		r.Kubeconfig,
+		r.Debug,
+	)
 }
 
 func installTraefik(r *Recipe) error {
@@ -146,7 +164,7 @@ func installTraefik(r *Recipe) error {
 	}
 
 	var ingressProvider string
-	if r.CertManager.Enabled {
+	if r.CertManager.Enabled && r.Traefik.IngressProvider == "" {
 		ingressProvider = CertResolver
 	}
 
@@ -154,6 +172,7 @@ func installTraefik(r *Recipe) error {
 		traefik.Values{
 			AdditionalArguments:                nil,
 			IngressProvider:                    ingressProvider,
+			DnsChallengeEnabled:                traefikCfg.DnsChallenge,
 			DnsProvider:                        traefikCfg.DnsChallengeProvider,
 			DnsResolverEmail:                   traefikCfg.DnsChallengeResolverEmail,
 			DnsResolverIPs:                     traefikCfg.DnsChallengeResolverIPs,
