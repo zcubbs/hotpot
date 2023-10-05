@@ -29,6 +29,9 @@ k3s:
   dataDir: /data/k3s
   defaultLocalStoragePath: /data/local-path-provisioner
   purgeExisting: false
+  purgeExtraDirs:
+    - /data/k3s
+    - /data/local-path-provisioner
 
 certManager:
   enabled: true
@@ -36,6 +39,18 @@ certManager:
   letsencryptIssuerEnabled: true
   letsencryptIssuerEmail: test@example.com
   letsEncryptIngressClassResolver: traefik
+  httpChallengeEnabled: false
+  dnsChallengeEnabled: false
+  dnsProvider: azure # ovh, azure, cloudflare or route53
+#  dnsRecursiveNameservers:
+#    - 168.63.129.16:53
+#  dnsRecursiveNameserversOnly: true
+  dnsAzureClientID: env.HOTPOT_DNS_AZURE_CLIENT_ID
+  dnsAzureClientSecret: env.HOTPOT_DNS_AZURE_CLIENT_SECRET
+  dnsAzureHostedZoneName: example.com
+  dnsAzureResourceGroupName: env.HOTPOT_DNS_AZURE_RESOURCE_GROUP_NAME
+  dnsAzureSubscriptionID: env.HOTPOT_DNS_AZURE_SUBSCRIPTION_ID
+  dnsAzureTenantID: env.HOTPOT_DNS_AZURE_TENANT_ID
 
 traefik:
   enabled: true
@@ -47,7 +62,7 @@ traefik:
   proxyProtocol: true
   proxyProtocolInsecure: true
   ingressProvider: traefik
-  dnsChallenge: false
+  dnsChallenge: true
   dnsChallengeProvider: ovh
   dnsChallengeResolverEmail: test@example.com
 #  dnsChallengeResolverIPs: "1.1.1.1:53,8.8.8.8:53"

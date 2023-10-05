@@ -11,6 +11,7 @@ import (
 	"github.com/zcubbs/go-k8s/traefik"
 	"github.com/zcubbs/x/host"
 	"github.com/zcubbs/x/secret"
+	"os"
 	"strings"
 )
 
@@ -68,10 +69,19 @@ func installK3s(r *Recipe) error {
 	fmt.Printf("🍕 Adding k3s... \n")
 	k3sCfg := r.K3s
 	if k3sCfg.PurgeExisting {
-		fmt.Printf(" ├─ uninstalling k3s... ")
+		fmt.Printf(" ├─ uninstalling k3s... \n")
 		err := k3s.Uninstall(r.Debug)
 		if err != nil && !strings.Contains(err.Error(), "no such file or directory") { // ignore if k3s is not installed
 			return err
+		}
+
+		// purge extra dirs
+		for _, v := range k3sCfg.PurgeExtraDirs {
+			fmt.Printf(" ├─ purging extra dir %s... \n", v)
+			err := purgeDir(v)
+			if err != nil {
+				return err
+			}
 		}
 
 		fmt.Printf("ok\n")
@@ -96,6 +106,16 @@ func installK3s(r *Recipe) error {
 	fmt.Printf(" └─ install ok\n")
 
 	return installHelm(r)
+}
+
+func purgeDir(dir string) error {
+	// delete dir
+	err := os.RemoveAll(dir)
+	if err != nil {
+		fmt.Printf("failed to delete dir %s: %s\n", dir, err)
+	}
+
+	return nil
 }
 
 func ensureTraefikIsDisabled(options []string) []string {
@@ -147,6 +167,17 @@ func installCertManager(r *Recipe) error {
 			LetsencryptIssuerEnabled:        certmanagerCfg.LetsencryptIssuerEnabled,
 			LetsencryptIssuerEmail:          certmanagerCfg.LetsencryptIssuerEmail,
 			LetsEncryptIngressClassResolver: certmanagerCfg.LetsEncryptIngressClassResolver,
+			HttpChallengeEnabled:            certmanagerCfg.HttpChallengeEnabled,
+			DnsChallengeEnabled:             certmanagerCfg.DnsChallengeEnabled,
+			DnsProvider:                     certmanagerCfg.DnsProvider,
+			DnsRecursiveNameservers:         certmanagerCfg.DnsRecursiveNameservers,
+			DnsRecursiveNameserversOnly:     certmanagerCfg.DnsRecursiveNameserversOnly,
+			DnsAzureClientID:                certmanagerCfg.DnsAzureClientID,
+			DnsAzureClientSecret:            certmanagerCfg.DnsAzureClientSecret,
+			DnsAzureHostedZoneName:          certmanagerCfg.DnsAzureHostedZoneName,
+			DnsAzureResourceGroupName:       certmanagerCfg.DnsAzureResourceGroupName,
+			DnsAzureSubscriptionID:          certmanagerCfg.DnsAzureSubscriptionID,
+			DnsAzureTenantID:                certmanagerCfg.DnsAzureTenantID,
 		},
 		r.Kubeconfig,
 		r.Debug,
@@ -165,7 +196,7 @@ func installTraefik(r *Recipe) error {
 
 	var ingressProvider string
 	if r.CertManager.Enabled && r.Traefik.IngressProvider == "" {
-		ingressProvider = CertResolver
+		return fmt.Errorf("cert-manager is enabled but traefik ingress provider is not set")
 	}
 
 	return traefik.Install(
