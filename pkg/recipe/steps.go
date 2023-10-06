@@ -93,7 +93,7 @@ func installK3s(r *Recipe) error {
 	err := k3s.Install(k3s.Config{
 		Disable:                 disableOpts,
 		TlsSan:                  k3sCfg.TlsSan,
-		ForwardDns:              k3sCfg.ForwardDns,
+		ResolvConfPath:          k3sCfg.ResolvConfPath,
 		DataDir:                 k3sCfg.DataDir,
 		DefaultLocalStoragePath: k3sCfg.DefaultLocalStoragePath,
 		WriteKubeconfigMode:     k3sCfg.WriteKubeconfigMode,

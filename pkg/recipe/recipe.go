@@ -53,7 +53,7 @@ type K3sConfig struct {
 	DataDir                 string   `mapstructure:"dataDir" json:"dataDir" yaml:"dataDir"`
 	DefaultLocalStoragePath string   `mapstructure:"defaultLocalStoragePath" json:"defaultLocalStoragePath" yaml:"defaultLocalStoragePath"`
 	WriteKubeconfigMode     string   `mapstructure:"writeKubeconfigMode" json:"writeKubeconfigMode" yaml:"writeKubeconfigMode"`
-	ForwardDns              string   `mapstructure:"forwardDns" json:"forwardDns" yaml:"forwardDns"`
+	ResolvConfPath          string   `mapstructure:"resolvConfPath" json:"resolvConfPath" yaml:"resolvConfPath"`
 	IsHA                    bool     `mapstructure:"isHA" json:"isHA" yaml:"isHA"`
 	IsServer                bool     `mapstructure:"isServer" json:"isServer" yaml:"isServer"`
 	KubeApiAddress          string   `mapstructure:"kubeApiAddress" json:"kubeApiAddress" yaml:"kubeApiAddress"`

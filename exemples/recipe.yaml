@@ -25,7 +25,7 @@ k3s:
   kubeApiAddress: https://127.0.0.1:6443
   tlsSan:
     - 127.0.0.1
-#  forwardDns: "8.8.8.8"
+#  resolvConfPath: /etc/k3s-resolv.conf
   dataDir: /data/k3s
   defaultLocalStoragePath: /data/local-path-provisioner
   purgeExisting: false
@@ -61,6 +61,7 @@ traefik:
   forwardHeadersInsecure: true
   proxyProtocol: true
   proxyProtocolInsecure: true
+  transportInsecure: true
   ingressProvider: traefik
   dnsChallenge: true
   dnsChallengeProvider: ovh
