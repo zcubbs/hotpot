@@ -8,6 +8,7 @@ import (
 	"github.com/zcubbs/go-k8s/helm"
 	"github.com/zcubbs/go-k8s/k3s"
 	"github.com/zcubbs/go-k8s/kubernetes"
+	"github.com/zcubbs/go-k8s/rancher"
 	"github.com/zcubbs/go-k8s/traefik"
 	"github.com/zcubbs/x/host"
 	"github.com/zcubbs/x/secret"
@@ -92,6 +93,7 @@ func installK3s(r *Recipe) error {
 	}
 	err := k3s.Install(k3s.Config{
 		Disable:                 disableOpts,
+		Version:                 k3sCfg.Version,
 		TlsSan:                  k3sCfg.TlsSan,
 		ResolvConfPath:          k3sCfg.ResolvConfPath,
 		DataDir:                 k3sCfg.DataDir,
@@ -381,6 +383,30 @@ func createSecrets(r *Recipe) error {
 
 		fmt.Printf("    │  └─ secret ok\n")
 	}
+	return nil
+}
+
+func installK9s(r *Recipe) error {
+	fmt.Printf("🍣 Adding k9s... \n")
+	err := k3s.InstallK9s(r.Debug)
+	if err != nil {
+		return err
+	}
+	fmt.Printf(" └─ install ok\n")
+	return nil
+}
+
+func installRancher(r *Recipe) error {
+	fmt.Printf("🍣 Adding rancher... \n")
+	values := &rancher.Values{
+		Version:  r.Rancher.Version,
+		Hostname: r.Rancher.Hostname,
+	}
+	err := rancher.Install(values, r.Kubeconfig, r.Debug)
+	if err != nil {
+		return err
+	}
+	fmt.Printf(" └─ install ok\n")
 	return nil
 }
 

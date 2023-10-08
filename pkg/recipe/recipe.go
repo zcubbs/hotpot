@@ -16,6 +16,8 @@ type Recipe struct {
 	CertManager CertManagerConfig `mapstructure:"certManager" json:"certManager" yaml:"certManager"`
 	Traefik     TraefikConfig     `mapstructure:"traefik" json:"traefik" yaml:"traefik"`
 	K3s         K3sConfig         `mapstructure:"k3s" json:"k3s" yaml:"k3s"`
+	K9s         K9sConfig         `mapstructure:"k9s" json:"k9s" yaml:"k9s"`
+	Rancher     RancherConfig     `mapstructure:"rancher" json:"rancher" yaml:"rancher"`
 	ArgoCD      ArgoCDConfig      `mapstructure:"argocd" json:"argocd" yaml:"argocd"`
 	Secrets     SecretsConfig     `mapstructure:"secrets" json:"secrets" yaml:"secrets"`
 	Gitops      GitopsConfig      `mapstructure:"gitops" json:"gitops" yaml:"gitops"`
@@ -179,4 +181,14 @@ type ContainerRegistryCredentials struct {
 	Namespaces []string `mapstructure:"namespaces" json:"namespaces" yaml:"namespaces"`
 	UseVault   bool     `mapstructure:"useVault" json:"useVault" yaml:"useVault"`
 	UseEnv     bool     `mapstructure:"useEnv" json:"useEnv" yaml:"useEnv"`
+}
+
+type RancherConfig struct {
+	Enabled  bool   `mapstructure:"enabled" json:"enabled" yaml:"enabled"`
+	Version  string `mapstructure:"version" json:"version" yaml:"version"`
+	Hostname string `mapstructure:"hostname" json:"hostname" yaml:"hostname"`
+}
+
+type K9sConfig struct {
+	Enabled bool `mapstructure:"enabled" json:"enabled" yaml:"enabled"`
 }
