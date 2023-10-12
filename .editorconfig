@@ -8,7 +8,7 @@ indent_style = space
 indent_size = 2
 
 [{Makefile,go.mod,go.sum,*.go,.gitmodules}]
-indent_style = tab
+indent_style = space
 indent_size = 4
 
 [*.md]
@@ -16,4 +16,4 @@ indent_size = 4
 trim_trailing_whitespace = false
 
 [Taskfile.yaml]
-indent_style = tab
+indent_style = space

@@ -1,33 +1,59 @@
 name: Release
 
-# This ensures that the release is only created after the Docker Build Pipeline
-# has successfully completed.
 on:
   workflow_dispatch:
-    inputs:
-      semver:
-        type: string
-        description: 'Semver (eg: v1.2.3)'
-        required: true
-
 permissions:
   contents: write
-
 jobs:
-
   release:
+    if : github.triggering_actor == 'zcubbs'
+
     runs-on: ubuntu-latest
-
-    if : github.event.inputs.semver != '' && startsWith(github.event.inputs.semver, 'v') && github.triggering_actor == 'zcubbs'
-
     steps:
+      - name: Set Static Major and Minor Versions
+        id: static_version
+        run: |
+          echo "::set-output name=major::0"
+          echo "::set-output name=minor::8"
+
+      - name: Get latest release version
+        id: latest_version
+        run: |
+          latest_tag=$(curl --silent "https://api.github.com/repos/${{ github.repository }}/releases/latest" | jq .tag_name -r)
+          echo "::set-output name=version::$latest_tag"
+        continue-on-error: true
+
+      - name: Calculate new version
+        id: new_version
+        run: |
+          static_minor=${{ steps.static_version.outputs.minor }}
+          latest_minor=$(echo "${{ steps.latest_version.outputs.version }}" | cut -d. -f2)
+          patch=$(echo "${{ steps.latest_version.outputs.version }}" | cut -d. -f3 | tr -d 'v')
+
+          if [[ "$static_minor" != "$latest_minor" ]]; then
+            patch=0
+          else
+            let "patch+=1"
+          fi
+
+          new_version="v${{ steps.static_version.outputs.major }}.$static_minor.${patch}"
+          echo "::set-output name=version::$new_version"
+
       - name: Checkout Code
-        uses: actions/checkout@v3.5.3
+        uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
 
       - name: Set up Go
-        uses: actions/setup-go@v4.1.0
+        uses: actions/setup-go@93397bea11091df50f3d7e59dc26a7711a8bcfbe # v4.1.0
         with:
           go-version: '1.21'
+
+      # remove tests in order to clean dependencies
+      - name: Remove xxx_test.go files
+        run: rm -rf *_test.go ./examples ./images
+
+      # cleanup test dependencies
+      - name: Cleanup dependencies
+        run: go mod tidy
 
       - name: List files
         run: tree -Cfi
@@ -44,17 +70,17 @@ jobs:
           git config --global user.email "${{ github.triggering_actor}}@users.noreply.github.com"
 
           git add .
-          git commit --allow-empty -m 'bump ${{ inputs.semver }}'
-          git tag ${{ inputs.semver }}
-          git push origin ${{ inputs.semver }}
+          git commit --allow-empty -m 'bump ${{ steps.new_version.outputs.version }}'
+          git tag ${{ steps.new_version.outputs.version }}
+          git push origin ${{ steps.new_version.outputs.version }}
 
       - name: Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844 # v0.1.15
         with:
-          name: ${{ inputs.semver }}
-          tag_name: ${{ inputs.semver }}
+          name: ${{ steps.new_version.outputs.version }}
+          tag_name: ${{ steps.new_version.outputs.version }}
 
-      - uses: goreleaser/goreleaser-action@v4
+      - uses: goreleaser/goreleaser-action@7ec5c2b0c6cdda6e8bbb49444bc797dd33d74dd8 # v3.0.0
         with:
           distribution: goreleaser
           version: latest
