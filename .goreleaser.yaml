@@ -60,7 +60,6 @@ release:
     name: hotpot
   draft: false
   prerelease: auto
-  discussion_category_name: General
   header: |
     ## ({{ .Date }})
 
