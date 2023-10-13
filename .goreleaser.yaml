@@ -58,7 +58,7 @@ release:
   github:
     owner: zcubbs
     name: hotpot
-  draft: true
+  draft: false
   prerelease: auto
   discussion_category_name: General
   header: |
