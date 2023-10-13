@@ -72,6 +72,10 @@ traefik:
 #  defaultCertificateKey: env.HOTPOT_DEFAULT_CERTIFICATE_KEY
   debug: true
 
+rancher:
+  enabled: false
+  hostname: rancher.mydomain.com
+
 secrets:
   enabled: true
   containerRegistries:
