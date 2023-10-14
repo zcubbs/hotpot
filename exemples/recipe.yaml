@@ -63,7 +63,10 @@ traefik:
   proxyProtocolInsecure: true
   transportInsecure: true
   ingressProvider: traefik
-  dnsChallenge: true
+  tlsChallenge: false
+  tlsChallengeResolver: letsencrypt
+  tlsChallengeResolverEmail: test@example.com
+  dnsChallenge: false
   dnsChallengeProvider: ovh
   dnsChallengeResolverEmail: test@example.com
 #  dnsChallengeResolverIPs: "1.1.1.1:53,8.8.8.8:53"

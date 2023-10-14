@@ -99,6 +99,9 @@ type TraefikConfig struct {
 	ProxyProtocolEdgeIp       string `mapstructure:"proxyProtocolEdgeIp" json:"proxyProtocolEdgeIp" yaml:"proxyProtocolEdgeIp"`
 	ProxyProtocolInsecure     bool   `mapstructure:"proxyProtocolInsecure" json:"proxyProtocolInsecure" yaml:"proxyProtocolInsecure"`
 	ProxyProtocolTrustedIPs   string `mapstructure:"proxyProtocolTrustedIPs" json:"proxyProtocolTrustedIPs" yaml:"proxyProtocolTrustedIPs"`
+	TlsChallenge              bool   `mapstructure:"tlsChallenge" json:"tlsChallenge" yaml:"tlsChallenge"`
+	TlsChallengeResolver      string `mapstructure:"tlsChallengeResolver" json:"tlsChallengeResolver" yaml:"tlsChallengeResolver"`
+	TlsChallengeResolverEmail string `mapstructure:"tlsChallengeResolverEmail" json:"tlsChallengeResolverEmail" yaml:"tlsChallengeResolverEmail"`
 	DnsChallenge              bool   `mapstructure:"dnsChallenge" json:"dnsChallenge" yaml:"dnsChallenge"`
 	DnsChallengeProvider      string `mapstructure:"dnsChallengeProvider" json:"dnsChallengeProvider" yaml:"dnsChallengeProvider"`
 	DnsChallengeDelay         int    `mapstructure:"dnsChallengeDelay" json:"dnsChallengeDelay" yaml:"dnsChallengeDelay"`

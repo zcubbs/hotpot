@@ -196,15 +196,17 @@ func installTraefik(r *Recipe) error {
 		}
 	}
 
-	var ingressProvider string
 	if r.CertManager.Enabled && r.Traefik.IngressProvider == "" {
-		return fmt.Errorf("cert-manager is enabled but traefik ingress provider is not set")
+		fmt.Println("warn: cert-manager is enabled but traefik ingress provider is not set")
 	}
 
 	return traefik.Install(
 		traefik.Values{
 			AdditionalArguments:                nil,
-			IngressProvider:                    ingressProvider,
+			IngressProvider:                    traefikCfg.IngressProvider,
+			TlsChallengeEnabled:                traefikCfg.TlsChallenge,
+			TlsResolver:                        traefikCfg.TlsChallengeResolver,
+			TlsResolverEmail:                   traefikCfg.TlsChallengeResolverEmail,
 			DnsChallengeEnabled:                traefikCfg.DnsChallenge,
 			DnsProvider:                        traefikCfg.DnsChallengeProvider,
 			DnsResolverEmail:                   traefikCfg.DnsChallengeResolverEmail,
