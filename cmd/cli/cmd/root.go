@@ -63,7 +63,7 @@ func About() {
 	fmt.Println("HotPot: Cooking Your Cluster to Perfection 🍲")
 	fmt.Println(getFullVersion())
 	fmt.Println(getDescription())
-	fmt.Println("Copyright (c) 2023 zakaria.elbouwab (zcubbs)")
+	fmt.Println("Author: zakaria.elbouwab")
 	fmt.Println("License: MIT")
 	fmt.Println("Repository: https://github.com/zcubbs/hotpot")
 }
