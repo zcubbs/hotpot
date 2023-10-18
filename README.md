@@ -1,6 +1,6 @@
 # HotPot: Cooking Your Cluster to Perfection 🍲
 
-`HotPot` is your go-to CLI utility that marries the simplicity of cooking with the robustness of Kubernetes deployments. Drawing inspiration from crafting and culinary arts, HotPot serves up k3s clusters based on your specific recipe (configuration). 
+`HotPot` is your go-to CLI utility that marries the simplicity of cooking with the robustness of Kubernetes deployments. Drawing inspiration from crafting and culinary arts, HotPot serves up k3s clusters based on your specific recipe (configuration). It aims to provide a reproducible, consistent, and reliable way to deploy your clusters and applications. It can also work with none k3s clusters by disabling the k3s feature. 
 
 ---
 <p align="center">
@@ -22,7 +22,10 @@
   - [x] Configure support for DNS01 and HTTP01 challenges
   - [x] Configure Providers: Cloudflare, OVH, Azure
 - [x] Setup and configure CertManager
+- [x] Bootstrap Secrets: Container Registry Credentials, Generic Secrets
 - [x] Setup Argocd and configure applications, projects, and repositories
+- [x] Override any of the features above without recreating the cluster
+- [x] Nuke a cluster
 
 ...And much more!
 
@@ -76,9 +79,28 @@ curl -sfL https://raw.githubusercontent.com/zcubbs/hotpot/main/scripts/install/i
 
 ## Configuration
 
-### ACME Providers
+### ACME Providers (Let's Encrypt)
 
 Refer to documentation: https://doc.traefik.io/traefik/https/acme/#providers
+
+#### TLS Challenge using ALPN
+
+```yaml
+traefik:
+  tlsChallenge: true
+```
+
+#### DNS Challenge
+
+```yaml
+traefik:
+  tlsChallenge: false
+  dnsChallenge: false
+certManager:
+  dnsChallengeEnabled: true
+  dnsProvider: azure # ovh, azure, cloudflare or route53
+  letsEncryptIngressClassResolver: traefik
+```
 
 #### Supported DNS Providers
 
