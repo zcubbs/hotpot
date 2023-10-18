@@ -32,6 +32,48 @@
 curl -sfL https://raw.githubusercontent.com/zcubbs/hotpot/main/scripts/install/install.sh | bash
 ```
 
+## Usage
+
+```bash
+> hotpot cook -r recipe.yaml
+
+🍲 Cooking...
+🍳 Checking prerequisites... 
+    ├─ os: ok
+    ├─ arch: ok
+    ├─ ram: ok
+    ├─ cpu: ok
+    ├─ disk: ok
+    ├─ curl: ok
+    └─ prerequisites ok
+🍕 Adding k3s... 
+    └─ install ok
+🍉 Adding helm cli... 
+🌶️ Adding secrets... 
+    ├─ container registry credentials: regcred 
+    │  ├─ namespaces: [hub] ok
+    │  └─ secret ok
+    ├─ generic secret: my-secret 
+    │  ├─ namespaces: hub ok
+    │  └─ secret ok
+    └─ secrets ok
+🍙 Adding cert-manager... 
+    └─ install ok
+🍔 Adding traefik... 
+    └─ install ok
+🥪 Adding argocd... 
+    ├─ argocd admin password: ok
+    └─ install ok
+🌭 Adding gitops... 
+    ├─ project: hotpot ok
+    │  ├─ repository: gitops-private-repo ok
+    │  ├─ repository: helm-private-repo ok
+    │  ├─ application: hub ok
+    │  ├─ application: hub-manifests ok
+    └─ gitops ok
+ ok    completed
+```
+
 ## Configuration
 
 ### ACME Providers
