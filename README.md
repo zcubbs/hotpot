@@ -85,12 +85,16 @@ Refer to documentation: https://doc.traefik.io/traefik/https/acme/#providers
 
 #### TLS Challenge using ALPN
 
+> **Note**: TLS Challenge is not currently supported by CertManager. This is a Traefik only feature.
+
 ```yaml
 traefik:
   tlsChallenge: true
 ```
 
 #### DNS Challenge
+
+To delegate ACME Challenges to CertManager, set `dnsChallenge` or `tlsChallenge` to `true` and configure the `certManager` section. And set `letsEncryptIngressClassResolver` to `traefik` in the `certManager` section. Also make sure Traefik is configured with `dnsChallenge` and `tlsChallenge` set to `false`.
 
 ```yaml
 traefik:
