@@ -96,6 +96,8 @@ traefik:
 
 To delegate ACME Challenges to CertManager, set `dnsChallenge` or `tlsChallenge` to `true` and configure the `certManager` section. And set `letsEncryptIngressClassResolver` to `traefik` in the `certManager` section. Also make sure Traefik is configured with `dnsChallenge` and `tlsChallenge` set to `false`.
 
+Docs: https://cert-manager.io/docs/configuration/acme/
+
 ```yaml
 traefik:
   tlsChallenge: false
