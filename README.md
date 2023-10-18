@@ -142,3 +142,10 @@ certManager:
   dnsRecursiveNameserversOnly: true
 ```
 
+## Contributing
+
+Contributions are welcome! If you find any issues, have suggestions, or would like to contribute code, please open an issue or a pull request on our GitHub page.
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.

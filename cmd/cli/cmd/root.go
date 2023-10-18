@@ -64,6 +64,7 @@ func About() {
 	fmt.Println(getFullVersion())
 	fmt.Println(getDescription())
 	fmt.Println("Copyright (c) 2023 zakaria.elbouwab (zcubbs)")
+	fmt.Println("License: MIT")
 	fmt.Println("Repository: https://github.com/zcubbs/hotpot")
 }
 
@@ -84,6 +85,8 @@ func getDescription() string {
 HotPot is your go-to CLI utility that marries the simplicity of cooking
 with the robustness of Kubernetes deployments. Drawing inspiration from
 crafting and culinary arts, HotPot serves up k3s clusters based on your
-specific recipe (configuration).
+specific recipe (configuration). It aims to provide a reproducible,
+consistent, and reliable way to deploy your clusters and applications.
+It can also work with none k3s clusters by disabling the k3s feature.
 `
 }
