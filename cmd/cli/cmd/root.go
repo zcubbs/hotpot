@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"github.com/zcubbs/hotpot/cmd/cli/cmd/cook"
+	"github.com/zcubbs/hotpot/cmd/cli/cmd/eightysix"
+	"github.com/zcubbs/hotpot/cmd/cli/cmd/kc"
 	"os"
 )
 
@@ -53,6 +55,8 @@ func init() {
 	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(aboutCmd)
 	rootCmd.AddCommand(cook.Cmd)
+	rootCmd.AddCommand(kc.Cmd)
+	rootCmd.AddCommand(eightysix.Cmd)
 }
 
 func About() {

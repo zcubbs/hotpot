@@ -31,25 +31,25 @@ func checkPrerequisites(r *Recipe) error {
 			return err
 		}
 	}
-	fmt.Printf(" - os: ok\n")
+	fmt.Printf("    ├─ os: ok\n")
 
 	// check if arch is amd64
 	if err := host.IsArchIn(r.Node.SupportedArch); err != nil {
 		return err
 	}
-	fmt.Printf(" - arch: ok\n")
+	fmt.Printf("    ├─ arch: ok\n")
 
 	// check if ram is enough
 	if err := host.IsRAMEnough(r.Node.MinMemory); err != nil {
 		return err
 	}
-	fmt.Printf(" - ram: ok\n")
+	fmt.Printf("    ├─ ram: ok\n")
 
 	// check if cpu is enough
 	if err := host.IsCPUEnough(r.Node.MinCpu); err != nil {
 		return err
 	}
-	fmt.Printf(" - cpu: ok\n")
+	fmt.Printf("    ├─ cpu: ok\n")
 
 	// check if disk is enough, check all disks
 	for _, v := range r.Node.MinDiskSize {
@@ -57,13 +57,15 @@ func checkPrerequisites(r *Recipe) error {
 			return err
 		}
 	}
-	fmt.Printf(" - disk: ok\n")
+	fmt.Printf("    ├─ disk: ok\n")
 
 	// check if curl ok for list of url (curl <url>)
 	if err := host.IsCurlOK(r.Node.Curl); err != nil {
 		return err
 	}
-	fmt.Printf(" - curl: ok\n")
+	fmt.Printf("    ├─ curl: ok\n")
+
+	fmt.Printf("    └─ prerequisites ok\n")
 
 	return nil
 }
@@ -72,7 +74,7 @@ func installK3s(r *Recipe) error {
 	fmt.Printf("🍕 Adding k3s... \n")
 	k3sCfg := r.K3s
 	if k3sCfg.PurgeExisting {
-		fmt.Printf(" ├─ uninstalling k3s... \n")
+		fmt.Printf("    ├─ uninstalling k3s... \n")
 		err := k3s.Uninstall(r.Debug)
 		if err != nil && !strings.Contains(err.Error(), "no such file or directory") { // ignore if k3s is not installed
 			return err
@@ -80,14 +82,14 @@ func installK3s(r *Recipe) error {
 
 		// purge extra dirs
 		for _, v := range k3sCfg.PurgeExtraDirs {
-			fmt.Printf(" ├─ purging extra dir %s... \n", v)
+			fmt.Printf("    ├─ purging extra dir %s... \n", v)
 			err := purgeDir(v)
 			if err != nil {
 				return err
 			}
 		}
 
-		fmt.Printf("ok\n")
+		fmt.Printf("    └─ uninstall ok\n")
 	}
 	disableOpts := ensureTraefikIsDisabled(k3sCfg.Disable)
 	if r.Debug {
@@ -107,7 +109,7 @@ func installK3s(r *Recipe) error {
 		return err
 	}
 
-	fmt.Printf(" └─ install ok\n")
+	fmt.Printf("    └─ install ok\n")
 
 	return installHelm(r)
 }
@@ -165,7 +167,7 @@ func installCertManager(r *Recipe) error {
 		}
 	}
 
-	return certmanager.Install(
+	err := certmanager.Install(
 		certmanager.Values{
 			Version:                         certmanagerCfg.Version,
 			LetsencryptIssuerEnabled:        certmanagerCfg.LetsencryptIssuerEnabled,
@@ -186,6 +188,12 @@ func installCertManager(r *Recipe) error {
 		r.Kubeconfig,
 		r.Debug,
 	)
+	if err != nil {
+		return fmt.Errorf("failed to install cert-manager \n %w", err)
+	}
+
+	fmt.Printf("    └─ install ok\n")
+	return nil
 }
 
 func installTraefik(r *Recipe) error {
@@ -202,7 +210,7 @@ func installTraefik(r *Recipe) error {
 		fmt.Println("warn: cert-manager is enabled but traefik ingress provider is not set")
 	}
 
-	return traefik.Install(
+	err := traefik.Install(
 		traefik.Values{
 			AdditionalArguments:                nil,
 			IngressProvider:                    traefikCfg.IngressProvider,
@@ -233,6 +241,13 @@ func installTraefik(r *Recipe) error {
 		r.Kubeconfig,
 		r.Debug,
 	)
+	if err != nil {
+		return fmt.Errorf("failed to install traefik \n %w", err)
+	}
+
+	fmt.Printf("    └─ install ok\n")
+
+	return nil
 }
 
 func installArgocd(r *Recipe) error {
@@ -264,8 +279,10 @@ func installArgocd(r *Recipe) error {
 			return fmt.Errorf("failed to patch argocd admin password \n %w", err)
 		}
 
-		fmt.Printf(" - argocd admin password: ok\n")
+		fmt.Printf("    ├─ argocd admin password: ok\n")
 	}
+
+	fmt.Printf("    └─ install ok\n")
 
 	return nil
 }
@@ -352,7 +369,13 @@ func createSecrets(r *Recipe) error {
 		return err
 	}
 
-	return createGenericSecrets(r.Secrets.GenericSecrets, r.Kubeconfig, r.Debug)
+	if err := createGenericSecrets(r.Secrets.GenericSecrets, r.Kubeconfig, r.Debug); err != nil {
+		return err
+	}
+
+	fmt.Printf("    └─ secrets ok\n")
+
+	return nil
 }
 
 func createContainerRegistrySecrets(secrets []ContainerRegistryCredentials, kubeconfig string, debug bool) error {
@@ -428,7 +451,7 @@ func createGenericSecrets(secrets []GenericSecret, kubeconfig string, debug bool
 					Name:      s.Name,
 					Namespace: s.Namespace,
 					Annotations: map[string]string{
-						"created-by": "hotpot",
+						"createdBy": "hotpot",
 					},
 				},
 				Data: data,

@@ -16,8 +16,9 @@ var (
 // Cmd represents the cook command
 var Cmd = &cobra.Command{
 	Use:   "cook",
-	Short: "cook commands",
-	Long:  ``,
+	Short: "Cook commands",
+	Long: `Cook cmd runs the recipe. Example: hotpot cook -r ./recipe.yaml.
+Add -v or --verbose to enable verbose output.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		verbose := cmd.Flag("verbose").Value.String() == "true"
 		must.Succeed(progress.RunTask(cook(verbose), true))
