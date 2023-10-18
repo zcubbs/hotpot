@@ -12,6 +12,8 @@ import (
 	"github.com/zcubbs/go-k8s/traefik"
 	"github.com/zcubbs/x/host"
 	"github.com/zcubbs/x/secret"
+	v1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"os"
 	"strings"
 )
@@ -346,10 +348,18 @@ func configureGitopsApps(r *Recipe, project string, apps []App) error {
 func createSecrets(r *Recipe) error {
 	fmt.Printf("🌶️  Adding secrets... \n")
 
-	for _, crs := range r.Secrets.ContainerRegistries {
+	if err := createContainerRegistrySecrets(r.Secrets.ContainerRegistries, r.Kubeconfig, r.Debug); err != nil {
+		return err
+	}
+
+	return createGenericSecrets(r.Secrets.GenericSecrets, r.Kubeconfig, r.Debug)
+}
+
+func createContainerRegistrySecrets(secrets []ContainerRegistryCredentials, kubeconfig string, debug bool) error {
+	for _, crs := range secrets {
 		fmt.Printf("    ├─ container registry credentials: %s \n", crs.Name)
 
-		err := kubernetes.CreateNamespace(r.Kubeconfig, crs.Namespaces)
+		err := kubernetes.CreateNamespace(kubeconfig, crs.Namespaces)
 		if err != nil {
 			return fmt.Errorf("failed to create namespace: %s %w", crs.Namespaces, err)
 		}
@@ -368,7 +378,7 @@ func createSecrets(r *Recipe) error {
 
 		err = kubernetes.CreateContainerRegistrySecret(
 			context.Background(),
-			r.Kubeconfig,
+			kubeconfig,
 			kubernetes.ContainerRegistrySecret{
 				Name:     crs.Name,
 				Server:   crs.Url,
@@ -377,7 +387,7 @@ func createSecrets(r *Recipe) error {
 			},
 			crs.Namespaces,
 			true,
-			r.Debug,
+			debug,
 		)
 		if err != nil {
 			return fmt.Errorf("failed to create container registry secret: %s %w", crs.Name, err)
@@ -385,6 +395,55 @@ func createSecrets(r *Recipe) error {
 
 		fmt.Printf("    │  └─ secret ok\n")
 	}
+
+	return nil
+}
+
+func createGenericSecrets(secrets []GenericSecret, kubeconfig string, debug bool) error {
+	for _, s := range secrets {
+		fmt.Printf("    ├─ generic secret: %s \n", s.Name)
+
+		err := kubernetes.CreateNamespace(kubeconfig, []string{s.Namespace})
+		if err != nil {
+			return fmt.Errorf("failed to create namespace: %s %w", s.Namespace, err)
+		}
+
+		fmt.Printf("    │  ├─ namespaces: %s ok\n", s.Namespace)
+
+		var data map[string][]byte
+		data = make(map[string][]byte)
+		for k, v := range s.Data {
+			value, err := secret.Provide(v)
+			if err != nil {
+				return fmt.Errorf("failed to provide secret %s: %w", k, err)
+			}
+			data[k] = []byte(value)
+		}
+
+		err = kubernetes.CreateGenericSecret(
+			context.Background(),
+			kubeconfig,
+			v1.Secret{
+				ObjectMeta: metav1.ObjectMeta{
+					Name:      s.Name,
+					Namespace: s.Namespace,
+					Annotations: map[string]string{
+						"created-by": "hotpot",
+					},
+				},
+				Data: data,
+			},
+			[]string{s.Namespace},
+			true,
+			debug,
+		)
+		if err != nil {
+			return fmt.Errorf("failed to create generic secret: %s %w", s.Name, err)
+		}
+
+		fmt.Printf("    │  └─ secret ok\n")
+	}
+
 	return nil
 }
 
@@ -399,7 +458,7 @@ func installK9s(r *Recipe) error {
 }
 
 func installRancher(r *Recipe) error {
-	fmt.Printf("🍣 Adding rancher... \n")
+	fmt.Printf("🍍 Adding rancher... \n")
 	values := &rancher.Values{
 		Version:  r.Rancher.Version,
 		Hostname: r.Rancher.Hostname,
@@ -413,7 +472,7 @@ func installRancher(r *Recipe) error {
 }
 
 func printKubeconfig(r *Recipe) error {
-	fmt.Printf("🍣  Printing kubeconfig... \n")
+	fmt.Printf("🍹 Printing kubeconfig... \n")
 	err := k3s.PrintKubeconfig(r.Kubeconfig, r.K3s.KubeApiAddress)
 	if err != nil {
 		return fmt.Errorf("failed to print kubeconfig \n %w", err)

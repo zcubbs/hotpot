@@ -88,6 +88,13 @@ secrets:
       password: env.HOTPOT_CONTAINER_REGISTRY_PASSWORD
       namespaces:
         - hub
+  genericSecrets:
+    - name: my-secret
+      type: Opaque
+      namespace: hub
+      data:
+        username: env.HOTPOT_MY_SECRET_USERNAME
+        password: env.HOTPOT_MY_SECRET_PASSWORD
 
 argocd:
   enabled: true

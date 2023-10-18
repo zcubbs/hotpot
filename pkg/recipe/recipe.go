@@ -174,6 +174,14 @@ type ArgocdRepositoryCredentials struct {
 type SecretsConfig struct {
 	Enabled             bool                           `mapstructure:"enabled" json:"enabled" yaml:"enabled"`
 	ContainerRegistries []ContainerRegistryCredentials `mapstructure:"containerRegistries" json:"containerRegistries" yaml:"containerRegistries"`
+	GenericSecrets      []GenericSecret                `mapstructure:"genericSecrets" json:"genericSecrets" yaml:"genericSecrets"`
+}
+
+type GenericSecret struct {
+	Name      string            `mapstructure:"name" json:"name" yaml:"name"`
+	Type      string            `mapstructure:"type" json:"type" yaml:"type"`
+	Namespace string            `mapstructure:"namespace" json:"namespace" yaml:"namespace"`
+	Data      map[string]string `mapstructure:"data" json:"data" yaml:"data"`
 }
 
 type ContainerRegistryCredentials struct {
