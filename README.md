@@ -130,3 +130,13 @@ certManager:
   dnsAzureSubscriptionID: env.HOTPOT_DNS_AZURE_SUBSCRIPTION_ID
   dnsAzureTenantID: env.HOTPOT_DNS_AZURE_TENANT_ID
 ```
+
+**Note**: If you need to override CodeDNS Nameservers config (CoreDNS uses the default resolv.conf on the host), use this:
+
+```yaml
+certManager:
+  dnsRecursiveNameservers:
+    - 8.8.8.8:53
+  dnsRecursiveNameserversOnly: true
+```
+
