@@ -15,6 +15,8 @@
 
 - [x] Create a k3s cluster with yaml configuration
 - [x] Delete a k3s cluster
+- [x] Check host prerequisites before creating a cluster, e.g. RAM, CPU, disk space, etc.
+- [x] Setup and configure Helm
 - [x] Setup and configure Traefik
   - [x] Setup and configure Let's Encrypt
   - [x] Setup and configure CertManager
