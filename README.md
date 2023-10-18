@@ -116,3 +116,17 @@ certManager:
 | **Azure** | `AZURE_CLIENT_ID`, `AZURE_CLIENT_SECRET`, `AZURE_SUBSCRIPTION_ID`, `AZURE_TENANT_ID`, `AZURE_RESOURCE_GROUP` | `certManager.dnsProvider: azure` |
 
 > **Note**: future versions of HotPot will support AWS Route53, Cloudflare, and other DNS providers.
+
+Example:
+    
+```yaml
+certManager:
+  dnsChallengeEnabled: true
+  dnsProvider: azure
+  dnsAzureClientID: env.HOTPOT_DNS_AZURE_CLIENT_ID
+  dnsAzureClientSecret: env.HOTPOT_DNS_AZURE_CLIENT_SECRET
+  dnsAzureHostedZoneName: example.com
+  dnsAzureResourceGroupName: env.HOTPOT_DNS_AZURE_RESOURCE_GROUP_NAME
+  dnsAzureSubscriptionID: env.HOTPOT_DNS_AZURE_SUBSCRIPTION_ID
+  dnsAzureTenantID: env.HOTPOT_DNS_AZURE_TENANT_ID
+```
