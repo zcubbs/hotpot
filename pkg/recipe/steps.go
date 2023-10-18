@@ -433,8 +433,7 @@ func createGenericSecrets(secrets []GenericSecret, kubeconfig string, debug bool
 
 		fmt.Printf("    │  ├─ namespaces: %s ok\n", s.Namespace)
 
-		var data map[string][]byte
-		data = make(map[string][]byte)
+		var data = make(map[string][]byte)
 		for k, v := range s.Data {
 			value, err := secret.Provide(v)
 			if err != nil {
