@@ -110,9 +110,9 @@ certManager:
 
 #### Supported DNS Providers
 
-| Provider  | Environment Variables                                                                                        | Recipe Config                                     |
-|-----------|--------------------------------------------------------------------------------------------------------------|---------------------------------------------------|
-| **OVH**   | `OVH_ENDPOINT`, `OVH_APPLICATION_KEY`, `OVH_APPLICATION_SECRET`, `OVH_CONSUMER_KEY`                          | `ingredients.traefik.dnsChallengeProvider: ovh`   |
-| **Azure** | `AZURE_CLIENT_ID`, `AZURE_CLIENT_SECRET`, `AZURE_SUBSCRIPTION_ID`, `AZURE_TENANT_ID`, `AZURE_RESOURCE_GROUP` | `ingredients.traefik.dnsChallengeProvider: azure` |
+| Provider  | Environment Variables                                                                                        | Recipe Config                    |
+|-----------|--------------------------------------------------------------------------------------------------------------|----------------------------------|
+| **OVH**   | `OVH_ENDPOINT`, `OVH_APPLICATION_KEY`, `OVH_APPLICATION_SECRET`, `OVH_CONSUMER_KEY`                          | `certManager.dnsProvider: ovh`   |
+| **Azure** | `AZURE_CLIENT_ID`, `AZURE_CLIENT_SECRET`, `AZURE_SUBSCRIPTION_ID`, `AZURE_TENANT_ID`, `AZURE_RESOURCE_GROUP` | `certManager.dnsProvider: azure` |
 
 > **Note**: future versions of HotPot will support AWS Route53, Cloudflare, and other DNS providers.
