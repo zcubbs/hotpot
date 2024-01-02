@@ -10,8 +10,8 @@ import (
 	"github.com/zcubbs/go-k8s/kubernetes"
 	"github.com/zcubbs/go-k8s/rancher"
 	"github.com/zcubbs/go-k8s/traefik"
+	"github.com/zcubbs/secret"
 	"github.com/zcubbs/x/host"
-	"github.com/zcubbs/x/secret"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"os"
@@ -109,7 +109,7 @@ func installK3s(r *Recipe) error {
 		return err
 	}
 
-	fmt.Printf("    └─ install ok\n")
+	fmt.Printf("    └─ install ok \n")
 
 	return installHelm(r)
 }
