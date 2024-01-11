@@ -373,6 +373,10 @@ func createSecrets(r *Recipe) error {
 		return err
 	}
 
+	if err := createGenericKeyValueSecrets(r.Secrets.GenericKeyValueSecrets, r.Kubeconfig, r.Debug); err != nil {
+		return err
+	}
+
 	fmt.Printf("    └─ secrets ok\n")
 
 	return nil
@@ -440,6 +444,53 @@ func createGenericSecrets(secrets []GenericSecret, kubeconfig string, debug bool
 				return fmt.Errorf("failed to provide secret %s: %w", k, err)
 			}
 			data[k] = []byte(value)
+		}
+
+		err = kubernetes.CreateGenericSecret(
+			context.Background(),
+			kubeconfig,
+			v1.Secret{
+				ObjectMeta: metav1.ObjectMeta{
+					Name:      s.Name,
+					Namespace: s.Namespace,
+					Annotations: map[string]string{
+						"createdBy": "hotpot",
+					},
+				},
+				Data: data,
+			},
+			[]string{s.Namespace},
+			true,
+			debug,
+		)
+		if err != nil {
+			return fmt.Errorf("failed to create generic secret: %s %w", s.Name, err)
+		}
+
+		fmt.Printf("    │  └─ secret ok\n")
+	}
+
+	return nil
+}
+
+func createGenericKeyValueSecrets(secrets []GenericKeyValueSecret, kubeconfig string, debug bool) error {
+	for _, s := range secrets {
+		fmt.Printf("    ├─ generic secret: %s \n", s.Name)
+
+		err := kubernetes.CreateNamespace(kubeconfig, []string{s.Namespace})
+		if err != nil {
+			return fmt.Errorf("failed to create namespace: %s %w", s.Namespace, err)
+		}
+
+		fmt.Printf("    │  ├─ namespaces: %s ok\n", s.Namespace)
+
+		var data = make(map[string][]byte)
+		for _, d := range s.Data {
+			value, err := secret.Provide(d.Value)
+			if err != nil {
+				return fmt.Errorf("failed to provide secret %s: %w", d.Value, err)
+			}
+			data[d.Key] = []byte(value)
 		}
 
 		err = kubernetes.CreateGenericSecret(

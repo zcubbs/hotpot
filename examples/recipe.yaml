@@ -95,6 +95,15 @@ secrets:
       data:
         username: env.HOTPOT_MY_SECRET_USERNAME
         password: env.HOTPOT_MY_SECRET_PASSWORD
+  genericKeyValueSecrets:
+    - name: my-secret
+      type: Opaque
+      namespace: hub
+      data:
+        - key: username
+          value: env.HOTPOT_MY_SECRET_USERNAME
+        - key: MY_PASSWORD
+          value: env.HOTPOT_MY_SECRET_PASSWORD
 
 argocd:
   enabled: true

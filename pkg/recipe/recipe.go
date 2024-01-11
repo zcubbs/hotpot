@@ -172,9 +172,10 @@ type ArgocdRepositoryCredentials struct {
 }
 
 type SecretsConfig struct {
-	Enabled             bool                           `mapstructure:"enabled" json:"enabled" yaml:"enabled"`
-	ContainerRegistries []ContainerRegistryCredentials `mapstructure:"containerRegistries" json:"containerRegistries" yaml:"containerRegistries"`
-	GenericSecrets      []GenericSecret                `mapstructure:"genericSecrets" json:"genericSecrets" yaml:"genericSecrets"`
+	Enabled                bool                           `mapstructure:"enabled" json:"enabled" yaml:"enabled"`
+	ContainerRegistries    []ContainerRegistryCredentials `mapstructure:"containerRegistries" json:"containerRegistries" yaml:"containerRegistries"`
+	GenericSecrets         []GenericSecret                `mapstructure:"genericSecrets" json:"genericSecrets" yaml:"genericSecrets"`
+	GenericKeyValueSecrets []GenericKeyValueSecret        `mapstructure:"genericKeyValueSecrets" json:"genericKeyValueSecrets" yaml:"genericKeyValueSecrets"`
 }
 
 type GenericSecret struct {
@@ -182,6 +183,18 @@ type GenericSecret struct {
 	Type      string            `mapstructure:"type" json:"type" yaml:"type"`
 	Namespace string            `mapstructure:"namespace" json:"namespace" yaml:"namespace"`
 	Data      map[string]string `mapstructure:"data" json:"data" yaml:"data"`
+}
+
+type GenericKeyValueSecret struct {
+	Name      string                      `mapstructure:"name" json:"name" yaml:"name"`
+	Type      string                      `mapstructure:"type" json:"type" yaml:"type"`
+	Namespace string                      `mapstructure:"namespace" json:"namespace" yaml:"namespace"`
+	Data      []GenericKeyValueSecretData `mapstructure:"data" json:"data" yaml:"data"`
+}
+
+type GenericKeyValueSecretData struct {
+	Key   string `mapstructure:"key" json:"key" yaml:"key"`
+	Value string `mapstructure:"value" json:"value" yaml:"value"`
 }
 
 type ContainerRegistryCredentials struct {
