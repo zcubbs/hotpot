@@ -6,11 +6,11 @@ require (
 	github.com/charmbracelet/lipgloss v0.9.1
 	github.com/spf13/cobra v1.8.0
 	github.com/spf13/viper v1.18.2
-	github.com/zcubbs/go-k8s v0.8.12
+	github.com/zcubbs/go-k8s v0.8.13
 	github.com/zcubbs/secret v0.1.1
 	github.com/zcubbs/x v0.1.16
-	k8s.io/api v0.29.0
-	k8s.io/apimachinery v0.29.0
+	k8s.io/api v0.29.1
+	k8s.io/apimachinery v0.29.1
 )
 
 require (
