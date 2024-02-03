@@ -52,6 +52,8 @@ func printRecipe(recipe *Recipe) {
 }
 
 var defaults = map[string]interface{}{
-	"kubeconfig":              "/etc/rancher/k3s/k3s.yaml",
-	"ingredients.k3s.disable": []string{"traefik"},
+	"kubeconfig":                           "/etc/rancher/k3s/k3s.yaml",
+	"k3s.disable":                          []string{"traefik"},
+	"k3s.version":                          "latest",
+	"certManager.letsencryptIssuerEnabled": true,
 }

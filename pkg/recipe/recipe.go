@@ -67,23 +67,30 @@ type K3sConfig struct {
 }
 
 type CertManagerConfig struct {
-	Enabled                         bool     `mapstructure:"enabled" json:"enabled" yaml:"enabled"`
-	Version                         string   `mapstructure:"version" json:"version" yaml:"version"`
-	LetsencryptIssuerEnabled        bool     `mapstructure:"letsencryptIssuerEnabled" json:"letsencryptIssuerEnabled" yaml:"letsencryptIssuerEnabled"`
-	LetsencryptIssuerEmail          string   `mapstructure:"letsencryptIssuerEmail" json:"letsencryptIssuerEmail" yaml:"letsencryptIssuerEmail"`
-	LetsEncryptIngressClassResolver string   `mapstructure:"letsEncryptIngressClassResolver" json:"letsEncryptIngressClassResolver" yaml:"letsEncryptIngressClassResolver"`
-	HttpChallengeEnabled            bool     `mapstructure:"httpChallengeEnabled" json:"httpChallengeEnabled" yaml:"httpChallengeEnabled"`
-	DnsChallengeEnabled             bool     `mapstructure:"dnsChallengeEnabled" json:"dnsChallengeEnabled" yaml:"dnsChallengeEnabled"`
-	DnsProvider                     string   `mapstructure:"dnsProvider" json:"dnsProvider" yaml:"dnsProvider"`
-	DnsRecursiveNameservers         []string `mapstructure:"dnsRecursiveNameservers" json:"dnsRecursiveNameservers" yaml:"dnsRecursiveNameservers"`
-	DnsRecursiveNameserversOnly     bool     `mapstructure:"dnsRecursiveNameserversOnly" json:"dnsRecursiveNameserversOnly" yaml:"dnsRecursiveNameserversOnly"`
-	DnsAzureClientID                string   `mapstructure:"dnsAzureClientID" json:"dnsAzureClientID" yaml:"dnsAzureClientID"`
-	DnsAzureClientSecret            string   `mapstructure:"dnsAzureClientSecret" json:"dnsAzureClientSecret" yaml:"dnsAzureClientSecret"`
-	DnsAzureHostedZoneName          string   `mapstructure:"dnsAzureHostedZoneName" json:"dnsAzureHostedZoneName" yaml:"dnsAzureHostedZoneName"`
-	DnsAzureResourceGroupName       string   `mapstructure:"dnsAzureResourceGroupName" json:"dnsAzureResourceGroupName" yaml:"dnsAzureResourceGroupName"`
-	DnsAzureSubscriptionID          string   `mapstructure:"dnsAzureSubscriptionID" json:"dnsAzureSubscriptionID" yaml:"dnsAzureSubscriptionID"`
-	DnsAzureTenantID                string   `mapstructure:"dnsAzureTenantID" json:"dnsAzureTenantID" yaml:"dnsAzureTenantID"`
-	PurgeExisting                   bool     `mapstructure:"purgeExisting" json:"purgeExisting" yaml:"purgeExisting"`
+	Enabled                     bool     `mapstructure:"enabled" json:"enabled" yaml:"enabled"`
+	Version                     string   `mapstructure:"version" json:"version" yaml:"version"`
+	LetsencryptIssuerEnabled    bool     `mapstructure:"letsencryptIssuerEnabled" json:"letsencryptIssuerEnabled" yaml:"letsencryptIssuerEnabled"`
+	LetsencryptIssuerEmail      string   `mapstructure:"letsencryptIssuerEmail" json:"letsencryptIssuerEmail" yaml:"letsencryptIssuerEmail"`
+	HttpChallengeEnabled        bool     `mapstructure:"httpChallengeEnabled" json:"httpChallengeEnabled" yaml:"httpChallengeEnabled"`
+	DnsChallengeEnabled         bool     `mapstructure:"dnsChallengeEnabled" json:"dnsChallengeEnabled" yaml:"dnsChallengeEnabled"`
+	DnsProvider                 string   `mapstructure:"dnsProvider" json:"dnsProvider" yaml:"dnsProvider"`
+	DnsRecursiveNameservers     []string `mapstructure:"dnsRecursiveNameservers" json:"dnsRecursiveNameservers" yaml:"dnsRecursiveNameservers"`
+	DnsRecursiveNameserversOnly bool     `mapstructure:"dnsRecursiveNameserversOnly" json:"dnsRecursiveNameserversOnly" yaml:"dnsRecursiveNameserversOnly"`
+
+	DnsAzureClientID          string `mapstructure:"dnsAzureClientID" json:"dnsAzureClientID" yaml:"dnsAzureClientID"`
+	DnsAzureClientSecret      string `mapstructure:"dnsAzureClientSecret" json:"dnsAzureClientSecret" yaml:"dnsAzureClientSecret"`
+	DnsAzureHostedZoneName    string `mapstructure:"dnsAzureHostedZoneName" json:"dnsAzureHostedZoneName" yaml:"dnsAzureHostedZoneName"`
+	DnsAzureResourceGroupName string `mapstructure:"dnsAzureResourceGroupName" json:"dnsAzureResourceGroupName" yaml:"dnsAzureResourceGroupName"`
+	DnsAzureSubscriptionID    string `mapstructure:"dnsAzureSubscriptionID" json:"dnsAzureSubscriptionID" yaml:"dnsAzureSubscriptionID"`
+	DnsAzureTenantID          string `mapstructure:"dnsAzureTenantID" json:"dnsAzureTenantID" yaml:"dnsAzureTenantID"`
+
+	DnsOvhEndpoint          string `mapstructure:"dnsOvhEndpoint" json:"dnsOvhEndpoint" yaml:"dnsOvhEndpoint"`
+	DnsOvhApplicationKey    string `mapstructure:"dnsOvhApplicationKey" json:"dnsOvhApplicationKey" yaml:"dnsOvhApplicationKey"`
+	DnsOvhApplicationSecret string `mapstructure:"dnsOvhApplicationSecret" json:"dnsOvhApplicationSecret" yaml:"dnsOvhApplicationSecret"`
+	DnsOvhConsumerKey       string `mapstructure:"dnsOvhConsumerKey" json:"dnsOvhConsumerKey" yaml:"dnsOvhConsumerKey"`
+	DnsOvhZone              string `mapstructure:"dnsOvhZone" json:"dnsOvhZone" yaml:"dnsOvhZone"`
+
+	PurgeExisting bool `mapstructure:"purgeExisting" json:"purgeExisting" yaml:"purgeExisting"`
 }
 
 type TraefikConfig struct {

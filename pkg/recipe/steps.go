@@ -172,7 +172,7 @@ func installCertManager(r *Recipe) error {
 			Version:                         certmanagerCfg.Version,
 			LetsencryptIssuerEnabled:        certmanagerCfg.LetsencryptIssuerEnabled,
 			LetsencryptIssuerEmail:          certmanagerCfg.LetsencryptIssuerEmail,
-			LetsEncryptIngressClassResolver: certmanagerCfg.LetsEncryptIngressClassResolver,
+			LetsEncryptIngressClassResolver: "cert-manager",
 			HttpChallengeEnabled:            certmanagerCfg.HttpChallengeEnabled,
 			DnsChallengeEnabled:             certmanagerCfg.DnsChallengeEnabled,
 			DnsProvider:                     certmanagerCfg.DnsProvider,
@@ -184,6 +184,11 @@ func installCertManager(r *Recipe) error {
 			DnsAzureResourceGroupName:       certmanagerCfg.DnsAzureResourceGroupName,
 			DnsAzureSubscriptionID:          certmanagerCfg.DnsAzureSubscriptionID,
 			DnsAzureTenantID:                certmanagerCfg.DnsAzureTenantID,
+			DnsOvhEndpoint:                  certmanagerCfg.DnsOvhEndpoint,
+			DnsOvhApplicationKey:            certmanagerCfg.DnsOvhApplicationKey,
+			DnsOvhApplicationSecret:         certmanagerCfg.DnsOvhApplicationSecret,
+			DnsOvhConsumerKey:               certmanagerCfg.DnsOvhConsumerKey,
+			DnsOvhZone:                      certmanagerCfg.DnsOvhZone,
 		},
 		r.Kubeconfig,
 		r.Debug,
@@ -206,8 +211,8 @@ func installTraefik(r *Recipe) error {
 		}
 	}
 
-	if r.CertManager.Enabled && r.Traefik.IngressProvider == "" {
-		fmt.Println("warn: cert-manager is enabled but traefik ingress provider is not set")
+	if r.CertManager.Enabled {
+		traefikCfg.IngressProvider = "cert-manager"
 	}
 
 	err := traefik.Install(

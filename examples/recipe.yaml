@@ -38,12 +38,12 @@ certManager:
   purgeExisting: false
   letsencryptIssuerEnabled: true
   letsencryptIssuerEmail: test@example.com
-  letsEncryptIngressClassResolver: traefik
   httpChallengeEnabled: false
-  dnsChallengeEnabled: false
+  dnsChallengeEnabled: true
   dnsProvider: azure # ovh, azure, cloudflare or route53
 #  dnsRecursiveNameservers:
-#    - 168.63.129.16:53
+#    - 1.1.1.1:53
+#    - 8.8.8.8:53
 #  dnsRecursiveNameserversOnly: true
   dnsAzureClientID: env.HOTPOT_DNS_AZURE_CLIENT_ID
   dnsAzureClientSecret: env.HOTPOT_DNS_AZURE_CLIENT_SECRET
@@ -51,6 +51,12 @@ certManager:
   dnsAzureResourceGroupName: env.HOTPOT_DNS_AZURE_RESOURCE_GROUP_NAME
   dnsAzureSubscriptionID: env.HOTPOT_DNS_AZURE_SUBSCRIPTION_ID
   dnsAzureTenantID: env.HOTPOT_DNS_AZURE_TENANT_ID
+  ############################
+  dnsOvhEndpoint: ovh-eu
+  dnsOvhApplicationKey: env.HOTPOT_DNS_OVH_APPLICATION_KEY
+  dnsOvhApplicationSecret: env.HOTPOT_DNS_OVH_APPLICATION_SECRET
+  dnsOvhConsumerKey: env.HOTPOT_DNS_OVH_CONSUMER_KEY
+  dnsOvhZone: example.com
 
 traefik:
   enabled: true
