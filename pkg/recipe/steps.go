@@ -211,8 +211,8 @@ func installTraefik(r *Recipe) error {
 		}
 	}
 
-	if r.CertManager.Enabled {
-		traefikCfg.IngressProvider = "cert-manager"
+	if r.CertManager.Enabled && r.Traefik.IngressProvider == "" {
+		fmt.Println("warn: cert-manager is enabled but traefik ingress provider is not set")
 	}
 
 	err := traefik.Install(
