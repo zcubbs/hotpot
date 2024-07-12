@@ -3,6 +3,9 @@ package recipe
 import (
 	"context"
 	"fmt"
+	"os"
+	"strings"
+
 	"github.com/zcubbs/go-k8s/argocd"
 	"github.com/zcubbs/go-k8s/certmanager"
 	"github.com/zcubbs/go-k8s/helm"
@@ -14,8 +17,6 @@ import (
 	"github.com/zcubbs/x/host"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"os"
-	"strings"
 )
 
 type step struct {
@@ -292,15 +293,16 @@ func installArgocd(r *Recipe) error {
 	return nil
 }
 
-func configureGitopsRepos(r *Recipe, repos []ArgocdRepository) error {
+func configureGitopsRepos(r *Recipe, namespace string, repos []ArgocdRepository) error {
 	for _, ar := range repos {
 		repo := argocd.Repository{
-			Name:     ar.Name,
-			Url:      ar.Url,
-			Username: ar.Credentials.Username,
-			Password: ar.Credentials.Password,
-			Type:     string(ar.Type),
-			IsOci:    ar.IsOci,
+			Name:      ar.Name,
+			Namespace: namespace,
+			Url:       ar.Url,
+			Username:  ar.Credentials.Username,
+			Password:  ar.Credentials.Password,
+			Type:      string(ar.Type),
+			IsOci:     ar.IsOci,
 		}
 		err := argocd.CreateRepository(repo, r.Kubeconfig, r.Debug)
 		if err != nil {
@@ -315,7 +317,8 @@ func configureGitopsProjects(r *Recipe) error {
 	fmt.Printf("🌭 Adding gitops... \n")
 	for _, project := range r.Gitops.Projects {
 		p := argocd.Project{
-			Name: project.Name,
+			Name:      project.Name,
+			Namespace: project.Namespace,
 		}
 		err := argocd.CreateProject(p, r.Kubeconfig, r.Debug)
 		if err != nil {
@@ -323,11 +326,11 @@ func configureGitopsProjects(r *Recipe) error {
 		}
 		fmt.Printf("    ├─ project: %s ok\n", project.Name)
 
-		if err := configureGitopsRepos(r, project.Repositories); err != nil {
+		if err := configureGitopsRepos(r, project.Namespace, project.Repositories); err != nil {
 			return err
 		}
 
-		if err := configureGitopsApps(r, project.Name, project.Apps); err != nil {
+		if err := configureGitopsApps(r, project.Name, project.Namespace, project.Apps); err != nil {
 			return err
 		}
 	}
@@ -337,7 +340,7 @@ func configureGitopsProjects(r *Recipe) error {
 	return nil
 }
 
-func configureGitopsApps(r *Recipe, project string, apps []App) error {
+func configureGitopsApps(r *Recipe, project string, namespace string, apps []App) error {
 	for _, app := range apps {
 		a := argocd.Application{
 			Name:             app.Name,
@@ -349,6 +352,7 @@ func configureGitopsApps(r *Recipe, project string, apps []App) error {
 			IsHelm:           app.IsHelm,
 			HelmValueFiles:   app.ValuesFiles,
 			Project:          project,
+			ArgoNamespace:    namespace,
 			RepoURL:          app.Repo,
 			TargetRevision:   app.Revision,
 			Path:             app.Path,

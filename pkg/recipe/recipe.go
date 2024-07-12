@@ -141,6 +141,7 @@ type GitopsConfig struct {
 
 type Project struct {
 	Name         string             `mapstructure:"name" json:"name" yaml:"name"`
+	Namespace    string             `mapstructure:"namespace" json:"namespace" yaml:"namespace"`
 	Repositories []ArgocdRepository `mapstructure:"repositories" json:"repositories" yaml:"repositories"`
 	Apps         []App              `mapstructure:"apps" json:"apps" yaml:"apps"`
 }
