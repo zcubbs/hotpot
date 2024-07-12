@@ -6,7 +6,7 @@ require (
 	github.com/charmbracelet/lipgloss v0.10.0
 	github.com/spf13/cobra v1.8.0
 	github.com/spf13/viper v1.18.2
-	github.com/zcubbs/go-k8s v0.8.16
+	github.com/zcubbs/go-k8s v0.8.17
 	github.com/zcubbs/secret v0.1.1
 	github.com/zcubbs/x v0.1.17
 	k8s.io/api v0.29.1
