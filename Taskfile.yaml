@@ -19,6 +19,11 @@ tasks:
       - go env -w GOOS=windows GOARCH=amd64
       - go build -o bin/hotpot.exe cmd/cli/main.go
 
+  build:darwin:
+    cmds:
+      - go env -w GOOS=darwin GOARCH=arm64
+      - go build -o bin/hotpot cmd/cli/main.go
+
   lint:
     cmds:
       - golangci-lint run ./... -v --timeout 5m
