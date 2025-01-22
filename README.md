@@ -33,6 +33,7 @@
 
 
 ## Installation
+> Supported platforms: `Linux`, `Mac`
 ```bash
 curl -sfL https://raw.githubusercontent.com/zcubbs/hotpot/main/scripts/install.sh | bash
 ```
