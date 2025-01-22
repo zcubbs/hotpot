@@ -430,8 +430,8 @@ github.com/yvasiyarov/newrelic_platform_go v0.0.0-20140908184405-b21fdbd4370f h1
 github.com/yvasiyarov/newrelic_platform_go v0.0.0-20140908184405-b21fdbd4370f/go.mod h1:GlGEuHIJweS1mbCqG+7vt2nvWLzLLnRHbXz5JKd/Qbg=
 github.com/zcubbs/crypto v0.1.0 h1:D6LPJadv0u18EZBhtGMFiCTGWqzC+AMygzRWlbvX51Y=
 github.com/zcubbs/crypto v0.1.0/go.mod h1:ouZGEfy8SMqc9FS9pU1RVgqhfhBTypQx5vvrxhFmSwI=
-github.com/zcubbs/go-k8s v0.8.18 h1:JCCyLK4IuRwTXXu0+LdzeNBmvhSMRHQveuQxdE4ynqc=
-github.com/zcubbs/go-k8s v0.8.18/go.mod h1:Yyu5a0ceN+QArcWPKmGfU7ja13jQOsXCz3vvH05unss=
+github.com/zcubbs/go-k8s v0.8.19 h1:Xhj5SedIzHa4wDJZjqr4cXL1h2Mj/MLCPVJicCgseds=
+github.com/zcubbs/go-k8s v0.8.19/go.mod h1:Yyu5a0ceN+QArcWPKmGfU7ja13jQOsXCz3vvH05unss=
 github.com/zcubbs/secret v0.1.1 h1:cupkYDzQQGTh+p/zMzfMNrZHSiVZqY77FjTM3yRQwjo=
 github.com/zcubbs/secret v0.1.1/go.mod h1:Z4ThZhSo2IBUlslBi4skzG7blaC62x/HojIB1oYEfA4=
 github.com/zcubbs/x v0.1.17 h1:/PXZBP54CaUd9z65ltGuwFtY13eYo/jCaV/5TfYYBdU=

@@ -137,6 +137,7 @@ type GitopsConfig struct {
 	Enabled       bool      `mapstructure:"enabled" json:"enabled" yaml:"enabled"`
 	PurgeExisting bool      `mapstructure:"purgeExisting" json:"purgeExisting" yaml:"purgeExisting"`
 	Projects      []Project `mapstructure:"projects" json:"projects" yaml:"projects"`
+	Clusters      []Cluster `mapstructure:"clusters" json:"clusters" yaml:"clusters"`
 }
 
 type Project struct {
@@ -144,6 +145,19 @@ type Project struct {
 	Namespace    string             `mapstructure:"namespace" json:"namespace" yaml:"namespace"`
 	Repositories []ArgocdRepository `mapstructure:"repositories" json:"repositories" yaml:"repositories"`
 	Apps         []App              `mapstructure:"apps" json:"apps" yaml:"apps"`
+	ClustersUrl  []string           `mapstructure:"clustersUrl" json:"clustersUrl" yaml:"clustersUrl"`
+}
+
+type Cluster struct {
+	Name       string         `mapstructure:"name" json:"name" yaml:"name"`
+	Namespace  string         `mapstructure:"namespace" json:"namespace" yaml:"namespace"`
+	ServerName string         `mapstructure:"serverName" json:"serverName" yaml:"serverName"`
+	ServerUrl  string         `mapstructure:"serverUrl" json:"serverUrl" yaml:"serverUrl"`
+	Secrets    ClusterSecrets `mapstructure:"secrets" json:"secrets" yaml:"secrets"`
+}
+
+type ClusterSecrets struct {
+	Config string `mapstructure:"config" json:"config" yaml:"config"`
 }
 
 type App struct {
@@ -156,6 +170,7 @@ type App struct {
 	IsHelm           bool     `mapstructure:"isHelm" json:"isHelm" yaml:"isHelm"`
 	IsOci            bool     `mapstructure:"isOci" json:"isOci" yaml:"isOci"`
 	OciChartName     string   `mapstructure:"ociChartName" json:"ociChartName" yaml:"ociChartName"`
+	Cluster          string   `mapstructure:"cluster" json:"cluster" yaml:"cluster"`
 	OCIChartRevision string   `mapstructure:"ociChartRevision" json:"ociChartRevision" yaml:"ociChartRevision"`
 	Recurse          bool     `mapstructure:"recurse" json:"recurse" yaml:"recurse"`
 	CreateNamespace  bool     `mapstructure:"createNamespace" json:"createNamespace" yaml:"createNamespace"`

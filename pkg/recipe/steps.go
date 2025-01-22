@@ -315,10 +315,25 @@ func configureGitopsRepos(r *Recipe, namespace string, repos []ArgocdRepository)
 
 func configureGitopsProjects(r *Recipe) error {
 	fmt.Printf("🌭 Adding gitops... \n")
+	for _, cluster := range r.Gitops.Clusters {
+		c := argocd.Cluster{
+			Name:       cluster.Name,
+			Namespace:  cluster.Namespace,
+			ServerName: cluster.ServerName,
+			ServerUrl:  cluster.ServerUrl,
+			Config:     cluster.Secrets.Config,
+		}
+		err := argocd.CreateCluster(c, r.Kubeconfig, r.Debug)
+		if err != nil {
+			return err
+		}
+		fmt.Printf("    ├─ cluster: %s ok\n", cluster.Name)
+	}
 	for _, project := range r.Gitops.Projects {
 		p := argocd.Project{
-			Name:      project.Name,
-			Namespace: project.Namespace,
+			Name:        project.Name,
+			Namespace:   project.Namespace,
+			ClustersUrl: project.ClustersUrl,
 		}
 		err := argocd.CreateProject(p, r.Kubeconfig, r.Debug)
 		if err != nil {
@@ -352,6 +367,7 @@ func configureGitopsApps(r *Recipe, project string, namespace string, apps []App
 			IsHelm:           app.IsHelm,
 			HelmValueFiles:   app.ValuesFiles,
 			Project:          project,
+			Cluster:          app.Cluster,
 			ArgoNamespace:    namespace,
 			RepoURL:          app.Repo,
 			TargetRevision:   app.Revision,
