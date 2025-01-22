@@ -1,7 +1,8 @@
 #!/bin/bash
 
-# get architecture
+# Get architecture and OS
 ARCH=$(uname -m)
+OS=$(uname -s)
 
 # Check if the architecture is supported
 if [[ $ARCH != "x86_64" && $ARCH != "arm64" ]]; then
@@ -9,13 +10,23 @@ if [[ $ARCH != "x86_64" && $ARCH != "arm64" ]]; then
   exit 1
 fi
 
-# Set the URL of the GitHub repository containing the binary.
-URL="https://github.com/zcubbs/hotpot/releases/latest/download/Hotpot_Linux_$ARCH.tar.gz"
+# Check if the OS is supported
+if [[ $OS != "Linux" && $OS != "Darwin" ]]; then
+  echo "Unsupported operating system: $OS"
+  exit 1
+fi
+
+# Determine the appropriate binary URL
+if [[ $OS == "Linux" ]]; then
+  URL="https://github.com/zcubbs/hotpot/releases/latest/download/Hotpot_Linux_$ARCH.tar.gz"
+elif [[ $OS == "Darwin" ]]; then
+  URL="https://github.com/zcubbs/hotpot/releases/latest/download/Hotpot_Darwin_$ARCH.tar.gz"
+fi
 
 # Get the file name from the URL
 FILE=$(basename $URL)
 
-echo "Installing $FILE"
+echo "Installing $FILE for $OS ($ARCH)"
 
 # Download the binary
 curl -L -O $URL
@@ -38,10 +49,8 @@ fi
 # Move the binary into the PATH, so it can be executed anywhere
 sudo mv $BINARY /usr/local/bin/
 
-# Check if the binary is now in the PATH and executable
-which $BINARY
-
-if [[ $? -ne 0 ]]; then
+# Verify if the binary is now in the PATH and executable
+if ! command -v $BINARY &>/dev/null; then
   echo "Installation failed."
   exit 1
 else
@@ -51,4 +60,5 @@ fi
 # Remove the downloaded file
 rm $FILE
 
+# Run the installed binary to verify functionality
 $BINARY about

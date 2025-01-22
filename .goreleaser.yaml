@@ -1,5 +1,3 @@
----
-
 project_name: Hotpot
 before:
   hooks:
@@ -9,6 +7,7 @@ builds:
     binary: hotpot
     goos:
       - linux
+      - darwin
     goarch:
       - amd64
       - arm64
