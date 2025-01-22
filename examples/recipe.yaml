@@ -120,9 +120,18 @@ argocd:
 gitops:
   enabled: true
   purgeExisting: false
+  # clusters:
+  #   - name: applications-cluster
+  #     namespace: argo
+  #     serverName: xxx
+  #     serverUrl: xxxx
+  #     secrets:
+  #       config: env.APPS_CLUSTER_CONFIG
   projects:
     - name: hotpot
       description: Hotpot GitOps
+      # clustersUrl:
+      #   - https://xxx
       repositories:
         - name: gitops-private-repo
           url: https://github.com/zcubbs/hotpot-gitops-test-private-repo
@@ -150,3 +159,5 @@ gitops:
             - values.yaml
           prune: true
           selfHeal: true
+          # clustersUrl:
+          #   - https://xxx
