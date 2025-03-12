@@ -2,35 +2,93 @@ version: '3'
 
 vars:
   GOOS: "{{OS}}"
+  VERSION:
+    sh: git describe --tags --always --dirty
+  COMMIT:
+    sh: git rev-parse --short HEAD
+  DATE:
+    sh: date -u +"%Y-%m-%dT%H:%M:%SZ"
+  LDFLAGS: >
+    -X github.com/zcubbs/hotpot/cmd/cli/cmd.Version={{.VERSION}}
+    -X github.com/zcubbs/hotpot/cmd/cli/cmd.Commit={{.COMMIT}}
+    -X github.com/zcubbs/hotpot/cmd/cli/cmd.Date={{.DATE}}
 
 tasks:
 
   test:
+    desc: Run tests
     cmds:
-      - go test ./...
+      - go test -v -race -coverprofile=coverage.out ./...
+      - go tool cover -func=coverage.out
+
+  test:coverage:
+    desc: Show test coverage in browser
+    cmds:
+      - go tool cover -html=coverage.out
+
+  build:
+    desc: Build for current OS
+    cmds:
+      - go build -ldflags="{{.LDFLAGS}}" -o bin/hotpot cmd/cli/main.go
+
+  build:all:
+    desc: Build for all platforms
+    cmds:
+      - task: build:linux
+      - task: build:darwin
+      - task: build:windows
 
   build:linux:
+    desc: Build for Linux
     cmds:
-      - go env -w GOOS=linux GOARCH=amd64
-      - go build -o bin/hotpot cmd/cli/main.go
-
-  build:windows:
-    cmds:
-      - go env -w GOOS=windows GOARCH=amd64
-      - go build -o bin/hotpot.exe cmd/cli/main.go
+      - GOOS=linux GOARCH=amd64 go build -ldflags="{{.LDFLAGS}}" -o bin/hotpot-linux-amd64 cmd/cli/main.go
 
   build:darwin:
+    desc: Build for macOS
     cmds:
-      - go env -w GOOS=darwin GOARCH=arm64
-      - go build -o bin/hotpot cmd/cli/main.go
+      - GOOS=darwin GOARCH=arm64 go build -ldflags="{{.LDFLAGS}}" -o bin/hotpot-darwin-arm64 cmd/cli/main.go
+      - GOOS=darwin GOARCH=amd64 go build -ldflags="{{.LDFLAGS}}" -o bin/hotpot-darwin-amd64 cmd/cli/main.go
+
+  build:windows:
+    desc: Build for Windows
+    cmds:
+      - GOOS=windows GOARCH=amd64 go build -ldflags="{{.LDFLAGS}}" -o bin/hotpot-windows-amd64.exe cmd/cli/main.go
 
   lint:
+    desc: Run linter
     cmds:
-      - golangci-lint run ./... -v --timeout 5m
+      - $(go env GOPATH)/bin/golangci-lint run ./... -v --timeout 5m
+
+  fmt:
+    desc: Format code
+    cmds:
+      - go fmt ./...
+      - gofmt -s -w .
+
+  tidy:
+    desc: Tidy and verify go modules
+    cmds:
+      - go mod tidy
+      - go mod verify
 
   scan:
+    desc: Run security scan
     cmds:
       - gosec -conf .gosec.config.json "./..."
+
+  check:
+    desc: Run all checks (lint, test, scan)
+    cmds:
+      - task: lint
+      - task: test
+      - task: scan
+
+  tools:install:
+    desc: Install all development tools
+    cmds:
+      - task: tools:install:golangci-lint
+      - task: tools:install:gosec
+      - task: tools:install:gofumpt
 
   tools:install:golangci-lint:
     desc: Install golangci-lint
@@ -41,3 +99,21 @@ tasks:
     desc: Install gosec
     cmds:
       - go install github.com/securego/gosec/v2/cmd/gosec@latest
+
+  tools:install:gofumpt:
+    desc: Install gofumpt (stricter gofmt)
+    cmds:
+      - go install mvdan.cc/gofumpt@latest
+
+  clean:
+    desc: Clean build artifacts
+    cmds:
+      - rm -rf bin/
+      - rm -f coverage.out
+
+  release:
+    desc: Create a new release
+    cmds:
+      - task: clean
+      - task: check
+      - task: build:all

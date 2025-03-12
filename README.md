@@ -28,6 +28,12 @@
 - [x] Setup Argocd and configure applications, projects, and repositories
 - [x] Override any of the features above without recreating the cluster
 - [x] Nuke a cluster
+- [x] Recipe Sync Daemon
+  - [x] Synchronize recipe files from Git repositories
+  - [x] Support for private GitLab/GitHub repositories
+  - [x] Token and SSH-based authentication
+  - [x] Configurable sync frequency
+  - [x] Systemd service integration
 
 ...And much more!
 
@@ -39,6 +45,8 @@ curl -sfL https://raw.githubusercontent.com/zcubbs/hotpot/main/scripts/install.s
 ```
 
 ## Usage
+
+### Cooking a Cluster
 
 ```bash
 > hotpot cook -r recipe.yaml
@@ -78,6 +86,54 @@ curl -sfL https://raw.githubusercontent.com/zcubbs/hotpot/main/scripts/install.s
     │  ├─ application: hub-manifests ok
     └─ gitops ok
  ok    completed
+```
+
+### Recipe Sync Daemon
+
+The Recipe Sync Daemon allows you to keep your recipe files synchronized with a Git repository. It runs as a systemd service and can be configured using interactive prompts.
+
+```bash
+# Configure the sync daemon
+> hotpot syncd config
+
+🔧 Configuring hotpot-syncd...
+
+Repository URL:
+❯ https://github.com/user/repo
+
+Branch:
+❯ main
+
+Auth Type (token/ssh):
+❯ token
+
+Token/SSH Key Path:
+❯ ghp_xxxxxxxxxxxxxxxxxxxx
+
+Local Path:
+❯ /etc/hotpot/recipes/prod.yaml
+
+Remote Path:
+❯ recipes/prod.yaml
+
+Sync Frequency (e.g., 5m, 1h):
+❯ 5m
+
+[ Submit ]
+
+✅ Configuration saved successfully
+
+# Enable and start the sync daemon
+> hotpot syncd enable
+
+🔌 Enabling hotpot-syncd service...
+✅ Service enabled successfully
+
+# Disable and stop the sync daemon
+> hotpot syncd disable
+
+🔌 Disabling hotpot-syncd service...
+✅ Service disabled successfully
 ```
 
 ## Configuration

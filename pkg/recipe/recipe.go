@@ -21,6 +21,8 @@ type Recipe struct {
 	ArgoCD      ArgoCDConfig      `mapstructure:"argocd" json:"argocd" yaml:"argocd"`
 	Secrets     SecretsConfig     `mapstructure:"secrets" json:"secrets" yaml:"secrets"`
 	Gitops      GitopsConfig      `mapstructure:"gitops" json:"gitops" yaml:"gitops"`
+
+	Dependencies *Dependencies `mapstructure:"-" json:"-" yaml:"-"`
 }
 
 type Node struct {
@@ -128,6 +130,8 @@ type TraefikConfig struct {
 
 type ArgoCDConfig struct {
 	Enabled             bool   `mapstructure:"enabled" json:"enabled" yaml:"enabled"`
+	Insecure            bool   `mapstructure:"insecure" json:"insecure" yaml:"insecure"`
+	ChartVersion        string `mapstructure:"chartVersion" json:"chartVersion" yaml:"chartVersion"`
 	AdminPassword       string `mapstructure:"adminPassword" json:"adminPassword" yaml:"adminPassword"`
 	AdminPasswordHashed bool   `mapstructure:"adminPasswordHashed" json:"adminPasswordHashed" yaml:"adminPasswordHashed"`
 	PurgeExisting       bool   `mapstructure:"purgeExisting" json:"purgeExisting" yaml:"purgeExisting"`

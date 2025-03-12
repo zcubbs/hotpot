@@ -3,9 +3,9 @@ package kc
 import (
 	"fmt"
 	"github.com/spf13/cobra"
-	"github.com/zcubbs/go-k8s/k3s"
-	"github.com/zcubbs/x/must"
-	"github.com/zcubbs/x/progress"
+	"github.com/zcubbs/hotpot/pkg/go-k8s/k3s"
+	"github.com/zcubbs/hotpot/pkg/x/must"
+	"github.com/zcubbs/hotpot/pkg/x/progress"
 )
 
 var url string

@@ -13,7 +13,7 @@ type PreHook func(r *Recipe) error
 type PostHook func(r *Recipe) error
 
 // Cook runs recipe
-func Cook(recipePath string, hooks ...Hooks) error {
+func Cook(recipePath string, deps Dependencies, hooks ...Hooks) error {
 	// load config
 	recipe, err := Load(recipePath)
 	if err != nil {
@@ -39,14 +39,14 @@ func Cook(recipePath string, hooks ...Hooks) error {
 
 	// add steps
 	if err := add(recipe,
-		step{f: checkPrerequisites, c: recipe.Node.Check},
-		step{f: installK3s, c: recipe.K3s.Enabled},
-		step{f: installK9s, c: recipe.K9s.Enabled},
+		step{f: func(r *Recipe) error { return checkPrerequisites(r, deps.SystemInfo) }, c: recipe.Node.Check},
+		step{f: func(r *Recipe) error { return installK3s(r, deps.K3s, deps.Helm, deps.FileSystem) }, c: recipe.K3s.Enabled},
+		step{f: func(r *Recipe) error { return installK9s(r, deps.K9s) }, c: recipe.K9s.Enabled},
 		step{f: createSecrets, c: recipe.Secrets.Enabled},
-		step{f: installCertManager, c: recipe.CertManager.Enabled},
-		step{f: installTraefik, c: recipe.Traefik.Enabled},
-		step{f: installRancher, c: recipe.Rancher.Enabled},
-		step{f: installArgocd, c: recipe.ArgoCD.Enabled},
+		step{f: func(r *Recipe) error { return installCertManager(r, deps.CertManager) }, c: recipe.CertManager.Enabled},
+		step{f: func(r *Recipe) error { return installTraefik(r, deps.Traefik) }, c: recipe.Traefik.Enabled},
+		step{f: func(r *Recipe) error { return installRancher(r, deps.Rancher) }, c: recipe.Rancher.Enabled},
+		step{f: func(r *Recipe) error { return installArgocd(r, deps.ArgoCD) }, c: recipe.ArgoCD.Enabled},
 		step{f: configureGitopsProjects, c: recipe.Gitops.Enabled},
 		step{f: printKubeconfig, c: recipe.Debug},
 	); err != nil {

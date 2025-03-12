@@ -6,6 +6,7 @@ import (
 	"github.com/zcubbs/hotpot/cmd/cli/cmd/cook"
 	"github.com/zcubbs/hotpot/cmd/cli/cmd/eightysix"
 	"github.com/zcubbs/hotpot/cmd/cli/cmd/kc"
+	"github.com/zcubbs/hotpot/cmd/cli/cmd/syncd"
 	"os"
 )
 
@@ -57,6 +58,7 @@ func init() {
 	rootCmd.AddCommand(cook.Cmd)
 	rootCmd.AddCommand(kc.Cmd)
 	rootCmd.AddCommand(eightysix.Cmd)
+	rootCmd.AddCommand(syncd.Cmd)
 }
 
 func About() {

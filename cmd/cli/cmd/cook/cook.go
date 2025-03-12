@@ -5,8 +5,8 @@ import (
 	"github.com/charmbracelet/lipgloss"
 	"github.com/spf13/cobra"
 	"github.com/zcubbs/hotpot/pkg/recipe"
-	"github.com/zcubbs/x/must"
-	"github.com/zcubbs/x/progress"
+	"github.com/zcubbs/hotpot/pkg/x/must"
+	"github.com/zcubbs/hotpot/pkg/x/progress"
 )
 
 var (
@@ -27,7 +27,8 @@ Add -v or --verbose to enable verbose output.`,
 
 func cook(verbose bool) func() error {
 	return func() error {
-		return recipe.Cook(recipePath,
+		deps := recipe.DefaultDependencies()
+		return recipe.Cook(recipePath, deps,
 			recipe.Hooks{
 				Pre: func(r *recipe.Recipe) error {
 					style := lipgloss.NewStyle().Bold(true)
