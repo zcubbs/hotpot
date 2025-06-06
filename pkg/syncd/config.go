@@ -25,13 +25,28 @@ type Config struct {
 }
 
 const (
-	defaultConfigDir  = "/etc/hotpot/syncd"
 	defaultConfigFile = "config.yaml"
 )
 
+// getDefaultConfigDir returns the default config directory using XDG Base Directory spec
+func getDefaultConfigDir() string {
+	// First check XDG_CONFIG_HOME
+	xdgConfigHome := os.Getenv("XDG_CONFIG_HOME")
+	if xdgConfigHome == "" {
+		// If not set, default to ~/.config
+		homeDir, err := os.UserHomeDir()
+		if err != nil {
+			// Fallback to /etc/hotpot if we can't get home dir
+			return "/etc/hotpot/syncd"
+		}
+		xdgConfigHome = filepath.Join(homeDir, ".config")
+	}
+	return filepath.Join(xdgConfigHome, "hotpot", "syncd")
+}
+
 // LoadConfig loads the syncd configuration from the default location
 func LoadConfig() (*Config, error) {
-	configPath := filepath.Join(defaultConfigDir, defaultConfigFile)
+	configPath := filepath.Join(getDefaultConfigDir(), defaultConfigFile)
 
 	viper.SetConfigFile(configPath)
 	viper.SetConfigType("yaml")
@@ -53,11 +68,12 @@ func LoadConfig() (*Config, error) {
 
 // SaveConfig saves the configuration to the default location
 func SaveConfig(config *Config) error {
-	if err := os.MkdirAll(defaultConfigDir, 0750); err != nil {
+	configDir := getDefaultConfigDir()
+	if err := os.MkdirAll(configDir, 0750); err != nil {
 		return fmt.Errorf("error creating config directory: %w", err)
 	}
 
-	configPath := filepath.Join(defaultConfigDir, defaultConfigFile)
+	configPath := filepath.Join(configDir, defaultConfigFile)
 
 	configJSON, err := json.MarshalIndent(config, "", "  ")
 	if err != nil {

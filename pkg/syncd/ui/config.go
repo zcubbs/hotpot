@@ -36,10 +36,6 @@ func (m *ConfigModel) Done() bool {
 }
 
 func InitialConfigModel() *ConfigModel {
-	// Initialize config
-	config := &syncd.Config{}
-	config.Repository.Branch = "main" // Set default branch
-
 	// Common styles
 	promptStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("205"))
 
@@ -53,38 +49,35 @@ func InitialConfigModel() *ConfigModel {
 		return input
 	}
 
-	// Repository URL
+	// Initialize inputs with default values
 	repoURL := setupInput("https://github.com/user/repo", 60)
 	repoURL.CharLimit = 150
 	repoURL.Focus()
 
-	// Branch
 	branch := setupInput("main", 30)
 	branch.CharLimit = 50
-	branch.SetValue("main") // Set default value
+	branch.SetValue("main") // Default value
 
-	// Auth Type
 	authType := setupInput("token or ssh", 10)
 	authType.CharLimit = 5
 
-	// Token/SSH Key
 	authValue := setupInput("Enter token or path to SSH key", 60)
 	authValue.CharLimit = 200
 
-	// Local Path
 	localPath := setupInput("/path/to/local/recipe.yaml", 60)
 	localPath.CharLimit = 150
 
-	// Remote Path
 	remotePath := setupInput("path/to/recipe.yaml", 60)
 	remotePath.CharLimit = 150
 
-	// Sync Frequency
 	syncFreq := setupInput("5m", 20)
 	syncFreq.CharLimit = 10
-	syncFreq.SetValue("5m") // Set default value
+	syncFreq.SetValue("5m") // Default value
 
-	return &ConfigModel{
+	// Create model with initialized config
+	config := &syncd.Config{}
+
+	model := &ConfigModel{
 		repoURL:    repoURL,
 		branch:     branch,
 		authType:   authType,
@@ -94,6 +87,57 @@ func InitialConfigModel() *ConfigModel {
 		syncFreq:   syncFreq,
 		config:     config,
 	}
+
+	// Try to load existing config
+	existingConfig, err := syncd.LoadConfig()
+	if err != nil && !strings.Contains(err.Error(), "file not found") {
+		// Only set error if it's not a "file not found" error
+		model.err = fmt.Errorf("failed to load existing config: %w", err)
+	} else if existingConfig != nil {
+		// Update the model's config with the existing one
+		model.config = existingConfig
+
+		// Prefill form fields with existing values
+		if existingConfig.Repository.URL != "" {
+			model.repoURL.SetValue(existingConfig.Repository.URL)
+		}
+		if existingConfig.Repository.Branch != "" {
+			model.branch.SetValue(existingConfig.Repository.Branch)
+		} else {
+			// Set default branch if not set
+			model.config.Repository.Branch = "main"
+			model.branch.SetValue("main")
+		}
+
+		// Set auth type and value
+		if existingConfig.Repository.Token != "" {
+			model.authType.SetValue("token")
+			model.authValue.SetValue(existingConfig.Repository.Token)
+		} else if existingConfig.Repository.SSHKey != "" {
+			model.authType.SetValue("ssh")
+			model.authValue.SetValue(existingConfig.Repository.SSHKey)
+		}
+
+		if existingConfig.Sync.LocalPath != "" {
+			model.localPath.SetValue(existingConfig.Sync.LocalPath)
+		}
+		if existingConfig.Sync.RemotePath != "" {
+			model.remotePath.SetValue(existingConfig.Sync.RemotePath)
+		}
+		if existingConfig.Sync.Frequency != "" {
+			model.syncFreq.SetValue(existingConfig.Sync.Frequency)
+		} else {
+			// Set default frequency if not set
+			model.config.Sync.Frequency = "5m"
+			model.syncFreq.SetValue("5m")
+		}
+	} else {
+		// Set default values for new config
+		model.config.Repository.Branch = "main"
+		model.config.Sync.Frequency = "5m"
+	}
+
+	return model
 }
 
 func (m *ConfigModel) Init() tea.Cmd {
@@ -191,6 +235,12 @@ func (m *ConfigModel) View() string {
 	titleStyle := lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("205")).MarginBottom(1)
 	b.WriteString(titleStyle.Render("🔧 Configure Hotpot Sync Daemon") + "\n\n")
 
+	// Show error if any
+	if m.err != nil {
+		errorStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("196")).Bold(true)
+		b.WriteString(errorStyle.Render(fmt.Sprintf("❌ Error: %v", m.err)) + "\n\n")
+	}
+
 	// Help text
 	helpStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("240"))
 	b.WriteString(helpStyle.Render("Use Tab/Shift+Tab or Up/Down arrows to navigate. Press Enter to submit.") + "\n\n")
@@ -253,39 +303,55 @@ func (m *ConfigModel) View() string {
 }
 
 func (m *ConfigModel) validateAndSave() error {
-	// Set repository settings
+	// Validate and set repository settings
+	if m.repoURL.Value() == "" {
+		return fmt.Errorf("repository URL is required")
+	}
 	m.config.Repository.URL = m.repoURL.Value()
+
+	if m.branch.Value() == "" {
+		return fmt.Errorf("branch is required")
+	}
 	m.config.Repository.Branch = m.branch.Value()
 
-	// Set auth type
+	// Validate and set auth type
 	authType := m.authType.Value()
 	if authType != "token" && authType != "ssh" {
 		return fmt.Errorf("invalid auth type: must be 'token' or 'ssh'")
 	}
 	m.config.Repository.AuthType = authType
 
-	// Set token or SSH key based on auth type
+	// Validate and set auth value
+	authValue := m.authValue.Value()
+	if authValue == "" {
+		return fmt.Errorf("auth value is required")
+	}
+
+	// Set token or SSH key based on auth type and clear the other
 	if authType == "token" {
-		m.config.Repository.Token = m.authValue.Value()
+		m.config.Repository.Token = authValue
+		m.config.Repository.SSHKey = "" // Clear SSH key when using token
 	} else {
-		m.config.Repository.SSHKey = m.authValue.Value()
+		m.config.Repository.SSHKey = authValue
+		m.config.Repository.Token = "" // Clear token when using SSH
 	}
 
-	// Set sync settings
-	m.config.Sync.LocalPath = m.localPath.Value()
-	m.config.Sync.RemotePath = m.remotePath.Value()
-	m.config.Sync.Frequency = m.syncFreq.Value()
-
-	// Validate required fields
-	if m.config.Repository.URL == "" {
-		return fmt.Errorf("repository URL is required")
-	}
-	if m.config.Sync.LocalPath == "" {
+	// Validate and set sync settings
+	if m.localPath.Value() == "" {
 		return fmt.Errorf("local path is required")
 	}
-	if m.config.Sync.Frequency == "" {
+	m.config.Sync.LocalPath = m.localPath.Value()
+
+	if m.remotePath.Value() == "" {
+		return fmt.Errorf("remote path is required")
+	}
+	m.config.Sync.RemotePath = m.remotePath.Value()
+
+	if m.syncFreq.Value() == "" {
 		return fmt.Errorf("sync frequency is required")
 	}
+	m.config.Sync.Frequency = m.syncFreq.Value()
 
+	// Save the config
 	return syncd.SaveConfig(m.config)
 }

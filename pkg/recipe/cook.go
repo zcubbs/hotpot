@@ -20,6 +20,9 @@ func Cook(recipePath string, deps Dependencies, hooks ...Hooks) error {
 		return err
 	}
 
+	// Set dependencies on the recipe object
+	recipe.Dependencies = &deps
+
 	// debug recipe
 	if recipe.Debug {
 		printRecipe(recipe)

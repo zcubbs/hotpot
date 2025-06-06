@@ -3,9 +3,11 @@ package recipe
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/zcubbs/hotpot/pkg/go-k8s/argocd"
 	"github.com/zcubbs/hotpot/pkg/go-k8s/kubernetes"
+	"github.com/zcubbs/hotpot/pkg/secret"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -65,6 +67,23 @@ func checkPrerequisites(r *Recipe, sysInfo SystemInfo) error {
 func configureGitopsRepos(r *Recipe, namespace string, repos []ArgocdRepository) error {
 	fmt.Printf("🍲 Configuring gitops repos... \n")
 	for _, repo := range repos {
+		// Check if credentials are using environment variables
+		if strings.HasPrefix(repo.Credentials.Username, "env.") || strings.HasPrefix(repo.Credentials.Password, "env.") {
+			// Try to resolve the credentials
+			username, usernameErr := secret.Provide(repo.Credentials.Username)
+			password, passwordErr := secret.Provide(repo.Credentials.Password)
+
+			// If we can't resolve the credentials, skip this repository
+			if usernameErr != nil || passwordErr != nil {
+				fmt.Printf("⚠️ Skipping repository %s due to missing environment variables\n", repo.Name)
+				continue
+			}
+
+			// Use the resolved credentials
+			repo.Credentials.Username = username
+			repo.Credentials.Password = password
+		}
+
 		err := r.Dependencies.ArgoCD.CreateRepository(argocd.Repository{
 			Name:      repo.Name,
 			Url:       repo.Url,
@@ -83,11 +102,31 @@ func configureGitopsRepos(r *Recipe, namespace string, repos []ArgocdRepository)
 
 func configureGitopsProjects(r *Recipe) error {
 	fmt.Printf("🍱 Configuring gitops projects... \n")
+
+	// Check if ArgoCD dependency is initialized
+	if r.Dependencies == nil || r.Dependencies.ArgoCD == nil {
+		// Try to initialize ArgoCD dependency for gitops even if ArgoCD installation is skipped
+		if r.Dependencies != nil {
+			// Initialize ArgoCD dependency with DefaultManager
+			r.Dependencies.ArgoCD = argocd.DefaultManager{}
+			fmt.Printf("ℹ️ Initialized ArgoCD dependency for gitops (without installation)\n")
+		} else {
+			fmt.Printf("⚠️ Dependencies are not initialized, skipping gitops projects configuration\n")
+			return nil
+		}
+	}
+
 	for _, project := range r.Gitops.Projects {
+		// Initialize an empty slice for ClustersUrl if it's nil
+		clustersUrl := project.ClustersUrl
+		if clustersUrl == nil {
+			clustersUrl = []string{}
+		}
+
 		err := r.Dependencies.ArgoCD.CreateProject(argocd.Project{
 			Name:        project.Name,
 			Namespace:   project.Namespace,
-			ClustersUrl: project.ClustersUrl,
+			ClustersUrl: clustersUrl,
 		}, r.Kubeconfig, r.Debug)
 		if err != nil {
 			return err
@@ -107,11 +146,18 @@ func configureGitopsProjects(r *Recipe) error {
 func configureGitopsApps(r *Recipe, project string, namespace string, apps []App) error {
 	fmt.Printf("🍛 Configuring gitops apps... \n")
 	for _, app := range apps {
+		// Skip applications that reference repositories that were skipped
+		if app.Repo == "" {
+			fmt.Printf("⚠️ Skipping application %s due to missing repository URL\n", app.Name)
+			continue
+		}
+
 		err := r.Dependencies.ArgoCD.CreateApplication(argocd.Application{
 			Name:            app.Name,
 			Namespace:       app.Namespace,
 			Project:         project,
 			Path:            app.Path,
+			RepoURL:         app.Repo,
 			IsHelm:          app.IsHelm,
 			IsOCI:           app.IsOci,
 			OCIChartName:    app.OciChartName,
