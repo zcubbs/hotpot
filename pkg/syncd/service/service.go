@@ -70,12 +70,12 @@ func Install() error {
 	servicePath, serviceTemplate := getServiceConfig()
 
 	// Create parent directory if it doesn't exist
-	if err := os.MkdirAll(filepath.Dir(servicePath), 0755); err != nil {
+	if err := os.MkdirAll(filepath.Dir(servicePath), 0750); err != nil {
 		return fmt.Errorf("failed to create service directory: %w", err)
 	}
 
 	// Write service file
-	if err := os.WriteFile(servicePath, []byte(serviceTemplate), 0644); err != nil {
+	if err := os.WriteFile(servicePath, []byte(serviceTemplate), 0600); err != nil {
 		return fmt.Errorf("failed to write service file: %w", err)
 	}
 
